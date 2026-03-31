@@ -86,7 +86,8 @@ def _start_rg_process(engine_exec: str, options: SearchOptions, root: Path) -> s
             cmd.extend(["-g", include_pattern])
     for exclude_pattern in options.exclude_patterns:
         cmd.extend(_build_exclude_globs(exclude_pattern))
-    cmd.extend([options.text, "."])
+    # 使用 -e 與 -- 隔開查詢字串，避免以 - 開頭的文字被 rg 當成旗標。
+    cmd.extend(["-e", options.text, "--", "."])
     return subprocess.Popen(
         cmd,
         cwd=str(root),

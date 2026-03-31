@@ -59,6 +59,15 @@ OBSIDIAN_NUMBER = "#d19a66"
 OBSIDIAN_TYPE = "#61afef"
 MATCH_BG = "#f6d365"
 MATCH_FG = "#000000"
+TEXT_EDITOR_SUFFIXES = {
+    ".cfg", ".conf", ".csv", ".env", ".ini", ".java", ".js", ".json", ".jsx", ".log", ".md", ".py", ".pyi",
+    ".pyw", ".sql", ".text", ".toml", ".ts", ".tsx", ".txt", ".xml", ".yaml", ".yml",
+}
+DANGEROUS_OPEN_SUFFIXES = {
+    ".appref-ms", ".bat", ".cmd", ".com", ".cpl", ".exe", ".hta", ".ins", ".isp", ".jse", ".lnk",
+    ".msc", ".msi", ".msp", ".ps1", ".ps1xml", ".ps2", ".ps2xml", ".psc1", ".psc2", ".py", ".pyw",
+    ".reg", ".scf", ".scr", ".sct", ".shb", ".url", ".vb", ".vbe", ".vbs", ".ws", ".wsc", ".wsf", ".wsh",
+}
 
 
 def apply_dark_theme(root: tk.Misc) -> None:
@@ -148,6 +157,23 @@ def apply_dark_theme(root: tk.Misc) -> None:
     root.option_add("*Listbox.foreground", DARK_TEXT)
     root.option_add("*Listbox.selectBackground", ACCENT)
     root.option_add("*Listbox.selectForeground", "#000000")
+
+
+def _open_path_safely(file_path: Path) -> str | None:
+    suffix = file_path.suffix.lower()
+    try:
+        # 可執行或腳本類型只在檔案總管中定位，避免直接執行。
+        if suffix in DANGEROUS_OPEN_SUFFIXES:
+            subprocess.Popen(["explorer", f"/select,{file_path}"])
+            return "reveal"
+        # 常見文字檔改由文字編輯器開啟，避免 Windows 檔案關聯誤觸執行。
+        if suffix in TEXT_EDITOR_SUFFIXES:
+            subprocess.Popen(["notepad.exe", str(file_path)])
+            return "open_text"
+        os.startfile(str(file_path))
+        return "open"
+    except Exception:
+        return None
 
 
 class RgSearchApp(tk.Tk):
@@ -387,7 +413,6 @@ class RgSearchApp(tk.Tk):
         self._folder_paths = settings.get("folders") or self._folder_paths
         self.include_var.set(settings.get("include", self.include_var.get()))
         self.exclude_var.set(settings.get("exclude", self.exclude_var.get()))
-        self.text_var.set(settings.get("text", self.text_var.get()))
         self.recursive_var.set(settings.get("recursive", self.recursive_var.get()))
         self.case_sensitive_var.set(settings.get("case_sensitive", self.case_sensitive_var.get()))
         self.regex_var.set(settings.get("use_regex", self.regex_var.get()))
@@ -406,7 +431,6 @@ class RgSearchApp(tk.Tk):
             "folders": self._folder_paths,
             "include": self.include_var.get(),
             "exclude": self.exclude_var.get(),
-            "text": self.text_var.get(),
             "recursive": self.recursive_var.get(),
             "case_sensitive": self.case_sensitive_var.get(),
             "use_regex": self.regex_var.get(),
@@ -1087,10 +1111,13 @@ class RgSearchApp(tk.Tk):
         result = self._result_by_path.get(result_key)
         if result is None:
             return
-        try:
-            os.startfile(str(result.full_path))
-        except Exception:
-            pass
+        outcome = _open_path_safely(result.full_path)
+        if outcome == "reveal":
+            self.status_var.set("已在檔案總管定位")
+            self.summary_var.set("偵測到可執行或腳本檔，已改為定位檔案以避免直接執行")
+        elif outcome == "open_text":
+            self.status_var.set("已開啟文字檔")
+            self.summary_var.set("已使用文字編輯器開啟目前檔案")
 
     def _get_display_lines(self) -> int:
         return _parse_positive_int(self.display_lines_var.get(), default=7, minimum=1, maximum=101)
