@@ -30,9 +30,19 @@ Quick links:
 - [Traditional Chinese guide](docs/zh-TW/README.md)
 - [Traditional Chinese user manual](docs/zh-TW/usage-guide.md)
 
-![RG Search GUI screenshot](docs/assets/search-result.png)
+## Screenshots
+
+![Search results view](docs/assets/search-result.png)
 
 *Search results view with multi-folder search, file filters, and code preview.*
+
+![Settings menu](docs/assets/settings-menu.png)
+
+*Settings menu with direct access to the inline Advanced Settings panel, diagnostics, and `rg` installation flow.*
+
+![Advanced Settings panel](docs/assets/search-settings-dialog.png)
+
+*Inline Advanced Settings panel with search options, preview theme selection, and diagnostics in the main window.*
 
 ## Why It Exists
 
