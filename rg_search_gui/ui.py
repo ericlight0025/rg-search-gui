@@ -69,6 +69,62 @@ DANGEROUS_OPEN_SUFFIXES = {
     ".reg", ".scf", ".scr", ".sct", ".shb", ".url", ".vb", ".vbe", ".vbs", ".ws", ".wsc", ".wsf", ".wsh",
 }
 
+DEFAULT_PREVIEW_THEME = "Obsidian"
+PREVIEW_THEMES: dict[str, dict[str, str]] = {
+    "Obsidian": {
+        "bg": OBSIDIAN_PREVIEW_BG,
+        "fg": OBSIDIAN_PREVIEW_FG,
+        "line_number": MUTED,
+        "selection_bg": ACCENT,
+        "selection_fg": "#000000",
+        "match_bg": MATCH_BG,
+        "match_fg": MATCH_FG,
+        "active_match_bg": "#ff9e64",
+        "active_match_fg": "#000000",
+        "syntax_comment": OBSIDIAN_COMMENT,
+        "syntax_string": OBSIDIAN_STRING,
+        "syntax_keyword": OBSIDIAN_KEYWORD,
+        "syntax_number": OBSIDIAN_NUMBER,
+        "syntax_type": OBSIDIAN_TYPE,
+    },
+    "Monokai": {
+        "bg": "#272822",
+        "fg": "#f8f8f2",
+        "line_number": "#8f908a",
+        "selection_bg": "#49483e",
+        "selection_fg": "#f8f8f2",
+        "match_bg": "#ffd866",
+        "match_fg": "#1f1f1f",
+        "active_match_bg": "#ff9f43",
+        "active_match_fg": "#111111",
+        "syntax_comment": "#75715e",
+        "syntax_string": "#e6db74",
+        "syntax_keyword": "#f92672",
+        "syntax_number": "#ae81ff",
+        "syntax_type": "#66d9ef",
+    },
+    "Light": {
+        "bg": "#fbfbfb",
+        "fg": "#1f2328",
+        "line_number": "#7a7f87",
+        "selection_bg": "#cce5ff",
+        "selection_fg": "#1f2328",
+        "match_bg": "#fff1a8",
+        "match_fg": "#1f2328",
+        "active_match_bg": "#ffcc66",
+        "active_match_fg": "#1f2328",
+        "syntax_comment": "#6a737d",
+        "syntax_string": "#0a7b34",
+        "syntax_keyword": "#8250df",
+        "syntax_number": "#0550ae",
+        "syntax_type": "#953800",
+    },
+}
+
+
+def _normalize_preview_theme_name(name: str) -> str:
+    return name if name in PREVIEW_THEMES else DEFAULT_PREVIEW_THEME
+
 
 def apply_dark_theme(root: tk.Misc) -> None:
     style = ttk.Style(root)
@@ -195,6 +251,7 @@ class RgSearchApp(tk.Tk):
         self.max_file_size_var = tk.StringVar(value="10")
         self.display_lines_var = tk.StringVar(value="7")
         self.font_size_var = tk.StringVar(value="11")
+        self.code_theme_var = tk.StringVar(value=DEFAULT_PREVIEW_THEME)
         self.file_filter_var = tk.StringVar()
         self.root_filter_var = tk.StringVar(value="All")
         self.extension_filter_var = tk.StringVar(value="All")
@@ -206,6 +263,7 @@ class RgSearchApp(tk.Tk):
         self.file_count_var = tk.StringVar(value="檔案：0/0")
         self.preview_info_var = tk.StringVar(value="預覽：尚未選擇檔案")
         self.progress_var = tk.DoubleVar(value=0)
+        self.diagnostics_info_var = tk.StringVar(value="尚未顯示診斷資訊")
 
         self._ui_task_queue: queue.Queue[tuple[str, tuple[object, ...]]] = queue.Queue()
         self._stop_event = threading.Event()
@@ -223,6 +281,7 @@ class RgSearchApp(tk.Tk):
         self._engine_info = EngineInfo(executable=None, label="未檢測")
         self._install_log_window: tk.Toplevel | None = None
         self._install_log_text: tk.Text | None = None
+        self._settings_panel_visible = False
 
         self._load_settings()
         self._build_menu()
@@ -234,7 +293,9 @@ class RgSearchApp(tk.Tk):
         self.sort_var.trace_add("write", lambda *_args: self._refresh_file_tree())
         self.display_lines_var.trace_add("write", lambda *_args: self._refresh_preview())
         self.font_size_var.trace_add("write", lambda *_args: self._apply_font_size())
+        self.code_theme_var.trace_add("write", lambda *_args: self._on_code_theme_changed())
         self._apply_font_size()
+        self._apply_preview_theme()
         self._refresh_engine_info()
         self.bind("<F3>", lambda _event: self._focus_next_hit())
         self.bind("<Shift-F3>", lambda _event: self._focus_previous_hit())
@@ -323,7 +384,7 @@ class RgSearchApp(tk.Tk):
     def _build_menu(self) -> None:
         menubar = tk.Menu(self)
         settings_menu = tk.Menu(menubar, tearoff=False)
-        settings_menu.add_command(label="Search Settings", command=self._open_settings_dialog)
+        settings_menu.add_command(label="Advanced Settings", command=self._open_settings_dialog)
         settings_menu.add_separator()
         settings_menu.add_command(label="Diagnostics", command=self._show_diagnostics)
         settings_menu.add_command(label="Install ripgrep (rg)", command=self.install_rg)
@@ -331,72 +392,41 @@ class RgSearchApp(tk.Tk):
         self.config(menu=menubar)
 
     def _open_settings_dialog(self) -> None:
-        dialog = tk.Toplevel(self)
-        dialog.title("Search Settings")
-        dialog.transient(self)
-        dialog.resizable(False, False)
-        dialog.configure(bg=DARK_BG)
+        self._toggle_settings_panel()
 
-        frame = ttk.Frame(dialog, padding=12)
-        frame.grid(row=0, column=0, sticky="nsew")
+    def _toggle_settings_panel(self) -> None:
+        self._set_settings_panel_visible(not self._settings_panel_visible)
 
-        ttk.Checkbutton(frame, text="Recursive", variable=self.recursive_var).grid(row=0, column=0, sticky="w", pady=4)
-        ttk.Checkbutton(frame, text="Case-sensitive", variable=self.case_sensitive_var).grid(row=1, column=0, sticky="w", pady=4)
-        ttk.Checkbutton(frame, text="Regular Expression", variable=self.regex_var).grid(row=2, column=0, sticky="w", pady=4)
+    def _set_settings_panel_visible(self, visible: bool) -> None:
+        if not hasattr(self, "settings_panel"):
+            return
+        self._refresh_diagnostics_info()
+        if visible:
+            self.settings_panel.grid()
+            self._settings_panel_visible = True
+            if hasattr(self, "settings_recursive_check"):
+                self.settings_recursive_check.focus_set()
+            return
+        self.settings_panel.grid_remove()
+        self._settings_panel_visible = False
 
-        ttk.Label(frame, text="File Encoding").grid(row=3, column=0, sticky="w", pady=(8, 4))
-        ttk.Combobox(
-            frame,
-            textvariable=self.encoding_var,
-            values=["Auto", "utf-8", "cp950", "big5", "utf-16"],
-            width=12,
-            state="readonly",
-        ).grid(row=3, column=1, sticky="ew", pady=(8, 4))
-
-        ttk.Label(frame, text="Max file size (MB)").grid(row=4, column=0, sticky="w", pady=4)
-        ttk.Combobox(
-            frame,
-            textvariable=self.max_file_size_var,
-            values=["1", "5", "10", "20", "50", "100"],
-            width=12,
-            state="readonly",
-        ).grid(row=4, column=1, sticky="ew", pady=4)
-
-        ttk.Label(frame, text="Display lines").grid(row=5, column=0, sticky="w", pady=4)
-        ttk.Combobox(
-            frame,
-            textvariable=self.display_lines_var,
-            values=["1", "3", "5", "7", "9", "11", "15", "21"],
-            width=12,
-        ).grid(row=5, column=1, sticky="ew", pady=4)
-
-        ttk.Label(frame, text="Font size").grid(row=6, column=0, sticky="w", pady=4)
-        ttk.Combobox(
-            frame,
-            textvariable=self.font_size_var,
-            values=["9", "10", "11", "12", "14", "16", "18", "20"],
-            width=12,
-        ).grid(row=6, column=1, sticky="ew", pady=4)
-
-        ttk.Button(frame, text="Close", command=lambda: self._close_settings_dialog(dialog), width=12).grid(row=7, column=0, columnspan=2, sticky="e", pady=(12, 0))
-        frame.columnconfigure(1, weight=1)
-        dialog.protocol("WM_DELETE_WINDOW", lambda: self._close_settings_dialog(dialog))
-        dialog.grab_set()
-
-    def _close_settings_dialog(self, dialog: tk.Toplevel) -> None:
-        self._save_settings()
-        dialog.destroy()
-
-    def _show_diagnostics(self) -> None:
-        lines = [
+    def _build_diagnostics_lines(self) -> list[str]:
+        return [
             f"App Version: {__version__}",
             f"Engine: {self._engine_info.label}",
             f"Executable: {self._engine_info.executable or 'N/A'}",
             f"Version: {self._engine_info.version or 'unknown'}",
             f"Settings file: {_get_settings_path()}",
             f"Folders: {len(self._folder_paths)}",
+            f"Code Theme: {self.code_theme_var.get()}",
         ]
-        messagebox.showinfo("RG Search Diagnostics", "\n".join(lines), parent=self)
+
+    def _refresh_diagnostics_info(self) -> None:
+        self.diagnostics_info_var.set("\n".join(self._build_diagnostics_lines()))
+
+    def _show_diagnostics(self) -> None:
+        self._refresh_diagnostics_info()
+        self._set_settings_panel_visible(True)
 
     def _refresh_engine_info(self) -> None:
         self._engine_info = _detect_engine_info()
@@ -407,6 +437,7 @@ class RgSearchApp(tk.Tk):
                 self.engine_var.set(f"引擎：{self._engine_info.label}")
         else:
             self.engine_var.set("引擎：不可用")
+        self._refresh_diagnostics_info()
 
     def _load_settings(self) -> None:
         settings = _load_settings_file()
@@ -420,6 +451,7 @@ class RgSearchApp(tk.Tk):
         self.max_file_size_var.set(str(settings.get("max_file_size_mb", self.max_file_size_var.get())))
         self.display_lines_var.set(str(settings.get("display_lines", self.display_lines_var.get())))
         self.font_size_var.set(str(settings.get("font_size", self.font_size_var.get())))
+        self.code_theme_var.set(_normalize_preview_theme_name(str(settings.get("code_theme", self.code_theme_var.get()))))
         self.file_filter_var.set(settings.get("file_filter", self.file_filter_var.get()))
         self.root_filter_var.set(settings.get("root_filter", self.root_filter_var.get()))
         self.extension_filter_var.set(settings.get("extension_filter", self.extension_filter_var.get()))
@@ -438,6 +470,7 @@ class RgSearchApp(tk.Tk):
             "max_file_size_mb": self.max_file_size_var.get(),
             "display_lines": self.display_lines_var.get(),
             "font_size": self.font_size_var.get(),
+            "code_theme": self.code_theme_var.get(),
             "file_filter": self.file_filter_var.get(),
             "root_filter": self.root_filter_var.get(),
             "extension_filter": self.extension_filter_var.get(),
@@ -446,11 +479,49 @@ class RgSearchApp(tk.Tk):
         }
         _save_settings_file(payload)
 
+    def _get_preview_theme(self) -> dict[str, str]:
+        theme_name = _normalize_preview_theme_name(self.code_theme_var.get())
+        return PREVIEW_THEMES[theme_name]
+
+    def _apply_preview_theme(self) -> None:
+        if not hasattr(self, "line_preview"):
+            return
+        theme = self._get_preview_theme()
+        self.line_preview.configure(
+            background=theme["bg"],
+            foreground=theme["fg"],
+            insertbackground=theme["fg"],
+            selectbackground=theme["selection_bg"],
+            selectforeground=theme["selection_fg"],
+        )
+        self.line_preview.tag_configure("line_number", foreground=theme["line_number"])
+        self.line_preview.tag_configure("match", background=theme["match_bg"], foreground=theme["match_fg"])
+        self.line_preview.tag_configure(
+            "active_match",
+            background=theme["active_match_bg"],
+            foreground=theme["active_match_fg"],
+        )
+        self.line_preview.tag_configure("syntax_comment", foreground=theme["syntax_comment"])
+        self.line_preview.tag_configure("syntax_string", foreground=theme["syntax_string"])
+        self.line_preview.tag_configure("syntax_keyword", foreground=theme["syntax_keyword"])
+        self.line_preview.tag_configure("syntax_number", foreground=theme["syntax_number"])
+        self.line_preview.tag_configure("syntax_type", foreground=theme["syntax_type"])
+
+    def _on_code_theme_changed(self) -> None:
+        normalized = _normalize_preview_theme_name(self.code_theme_var.get())
+        if normalized != self.code_theme_var.get():
+            self.code_theme_var.set(normalized)
+            return
+        self._apply_preview_theme()
+        self._refresh_preview()
+        self._refresh_diagnostics_info()
+        self._save_settings()
+
     def _build_ui(self) -> None:
         outer = ttk.Frame(self, padding=10)
         outer.pack(fill="both", expand=True)
         outer.columnconfigure(0, weight=1)
-        outer.rowconfigure(1, weight=1)
+        outer.rowconfigure(2, weight=1)
 
         form = ttk.LabelFrame(outer, text="搜尋條件", padding=10)
         form.grid(row=0, column=0, sticky="ew")
@@ -510,8 +581,86 @@ class RgSearchApp(tk.Tk):
         self.install_rg_button.pack(fill="x", pady=(0, 8))
         ttk.Button(actions, text="Clear", command=self._clear_results, width=12).pack(fill="x")
 
+        self.settings_panel = ttk.LabelFrame(outer, text="Advanced Settings", padding=10)
+        self.settings_panel.grid(row=1, column=0, sticky="ew", pady=(10, 0))
+        self.settings_panel.columnconfigure(0, weight=3)
+        self.settings_panel.columnconfigure(1, weight=2)
+
+        settings_form = ttk.Frame(self.settings_panel)
+        settings_form.grid(row=0, column=0, sticky="ew")
+        settings_form.columnconfigure(1, weight=1)
+        settings_form.columnconfigure(3, weight=1)
+
+        self.settings_recursive_check = ttk.Checkbutton(settings_form, text="Recursive", variable=self.recursive_var)
+        self.settings_recursive_check.grid(row=0, column=0, sticky="w", pady=4, padx=(0, 12))
+        ttk.Checkbutton(settings_form, text="Case-sensitive", variable=self.case_sensitive_var).grid(row=0, column=1, sticky="w", pady=4, padx=(0, 12))
+        ttk.Checkbutton(settings_form, text="Regular Expression", variable=self.regex_var).grid(row=0, column=2, sticky="w", pady=4, padx=(0, 12))
+
+        ttk.Label(settings_form, text="File Encoding").grid(row=1, column=0, sticky="w", pady=(8, 4))
+        ttk.Combobox(
+            settings_form,
+            textvariable=self.encoding_var,
+            values=["Auto", "utf-8", "cp950", "big5", "utf-16"],
+            width=12,
+            state="readonly",
+        ).grid(row=1, column=1, sticky="ew", pady=(8, 4), padx=(0, 12))
+
+        ttk.Label(settings_form, text="Max file size (MB)").grid(row=1, column=2, sticky="w", pady=(8, 4))
+        ttk.Combobox(
+            settings_form,
+            textvariable=self.max_file_size_var,
+            values=["1", "5", "10", "20", "50", "100"],
+            width=12,
+            state="readonly",
+        ).grid(row=1, column=3, sticky="ew", pady=(8, 4))
+
+        ttk.Label(settings_form, text="Display lines").grid(row=2, column=0, sticky="w", pady=4)
+        ttk.Combobox(
+            settings_form,
+            textvariable=self.display_lines_var,
+            values=["1", "3", "5", "7", "9", "11", "15", "21"],
+            width=12,
+        ).grid(row=2, column=1, sticky="ew", pady=4, padx=(0, 12))
+
+        ttk.Label(settings_form, text="Font size").grid(row=2, column=2, sticky="w", pady=4)
+        ttk.Combobox(
+            settings_form,
+            textvariable=self.font_size_var,
+            values=["9", "10", "11", "12", "14", "16", "18", "20"],
+            width=12,
+        ).grid(row=2, column=3, sticky="ew", pady=4)
+
+        ttk.Label(settings_form, text="Code Theme").grid(row=3, column=0, sticky="w", pady=4)
+        ttk.Combobox(
+            settings_form,
+            textvariable=self.code_theme_var,
+            values=list(PREVIEW_THEMES.keys()),
+            width=12,
+            state="readonly",
+        ).grid(row=3, column=1, sticky="ew", pady=4, padx=(0, 12))
+
+        diagnostics_frame = ttk.Frame(self.settings_panel)
+        diagnostics_frame.grid(row=0, column=1, sticky="nsew", padx=(18, 0))
+        diagnostics_frame.columnconfigure(0, weight=1)
+        ttk.Label(diagnostics_frame, text="Diagnostics", foreground=MUTED).grid(row=0, column=0, sticky="w")
+        ttk.Label(
+            diagnostics_frame,
+            textvariable=self.diagnostics_info_var,
+            justify="left",
+            wraplength=420,
+        ).grid(row=1, column=0, sticky="ew", pady=(8, 0))
+        ttk.Button(diagnostics_frame, text="Hide Panel", command=self._toggle_settings_panel, width=12).grid(
+            row=2,
+            column=0,
+            sticky="e",
+            pady=(12, 0),
+        )
+
+        self._refresh_diagnostics_info()
+        self.settings_panel.grid_remove()
+
         results_frame = ttk.Frame(outer)
-        results_frame.grid(row=1, column=0, sticky="nsew", pady=(10, 0))
+        results_frame.grid(row=2, column=0, sticky="nsew", pady=(10, 0))
         results_frame.columnconfigure(0, weight=1)
         results_frame.rowconfigure(0, weight=1)
 
@@ -594,20 +743,13 @@ class RgSearchApp(tk.Tk):
         preview_vsb.grid(row=0, column=1, sticky="ns")
         preview_hsb.grid(row=1, column=0, sticky="ew")
         self.line_preview.bind("<Double-1>", lambda _event: self._open_current_file())
-        self.line_preview.tag_configure("line_number", foreground=MUTED)
-        self.line_preview.tag_configure("match", background=MATCH_BG, foreground=MATCH_FG)
-        self.line_preview.tag_configure("active_match", background="#ff9e64", foreground="#000000")
-        self.line_preview.tag_configure("syntax_comment", foreground=OBSIDIAN_COMMENT)
-        self.line_preview.tag_configure("syntax_string", foreground=OBSIDIAN_STRING)
-        self.line_preview.tag_configure("syntax_keyword", foreground=OBSIDIAN_KEYWORD)
-        self.line_preview.tag_configure("syntax_number", foreground=OBSIDIAN_NUMBER)
-        self.line_preview.tag_configure("syntax_type", foreground=OBSIDIAN_TYPE)
+        self._apply_preview_theme()
         self.line_preview.configure(state="disabled")
         preview_panel.columnconfigure(0, weight=1)
         preview_panel.rowconfigure(1, weight=1)
 
         status_frame = ttk.Frame(outer)
-        status_frame.grid(row=2, column=0, sticky="ew", pady=(10, 0))
+        status_frame.grid(row=3, column=0, sticky="ew", pady=(10, 0))
         status_frame.columnconfigure(1, weight=1)
         status_frame.columnconfigure(2, weight=1)
         ttk.Label(status_frame, textvariable=self.status_var).grid(row=0, column=0, sticky="w", padx=(0, 12))
@@ -691,6 +833,7 @@ class RgSearchApp(tk.Tk):
             for index in select_indexes:
                 if 0 <= index < len(self._folder_paths):
                     self.folder_listbox.selection_set(index)
+        self._refresh_diagnostics_info()
 
     def _clear_results(self) -> None:
         if self._search_thread and self._search_thread.is_alive():

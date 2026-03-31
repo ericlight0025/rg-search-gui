@@ -110,13 +110,13 @@ rg-search-gui
 
 ### 選單項目
 
-- `Search Settings`：開啟搜尋設定視窗
-- `Diagnostics`：顯示目前偵測到的引擎、執行檔路徑、版本、設定檔位置與資料夾數量
+- `Advanced Settings`：在主畫面切換內嵌的設定面板
+- `Diagnostics`：展開同一塊面板，並刷新目前偵測到的引擎、執行檔路徑、版本、設定檔位置與資料夾數量
 - `Install ripgrep (rg)`：手動觸發 Windows `winget` 安裝流程
 
-![Search Settings dialog](../assets/search-settings-dialog.png)
+![Advanced Settings panel](../assets/search-settings-dialog.png)
 
-### Search Settings 欄位
+### Advanced Settings 欄位
 
 - `Recursive`：是否遞迴搜尋子資料夾
 - `Case-sensitive`：是否區分大小寫
@@ -126,7 +126,7 @@ rg-search-gui
 - `Display lines`：控制預覽時顯示的上下文行數
 - `Font size`：調整表格與預覽區字體大小
 
-當你關閉設定視窗時，程式會自動保存目前設定。
+設定面板會留在主畫面裡，因此你可以一邊調整，一邊保留目前結果畫面；程式仍會在正常流程中自動保存設定。
 
 ## 7. 搜尋結果畫面
 

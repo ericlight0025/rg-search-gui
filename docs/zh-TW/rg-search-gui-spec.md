@@ -7,36 +7,44 @@
 
 ## 結論
 
-這份文件原本是把 `rg_search_gui` 整個專案直接合併成單一 Markdown。
-我先保留完整原始碼內容，並在最前面補上可閱讀的整理層，讓你先看：
+這份文件現在的角色是：
 
-1. 這個工具在做什麼
-2. 模組怎麼分工
-3. 搜尋流程怎麼走
-4. 哪些地方是核心邏輯
+1. 用較短的整理層描述目前 `RG Search GUI` 的主線設計
+2. 保留後段 `Source Bundle` 當歷史快照與閱讀輔助
 
-下面的 `Source Bundle` 區塊仍然保留，方便你之後直接查原始碼。
+目前以 `0.1.0` 公開 MVP 來看，專案狀態已經不是早期草稿，而是可實際執行、可公開展示、可逐步收斂的桌面搜尋工具。最近補進去的重點包括：
+
+- GUI 標題列與 `Diagnostics` 顯示版本號
+- `Start / Cancel / 安裝 rg` 的按鈕層級調整
+- 預覽區新增 `Obsidian / Monokai / Light` 三組 code theme
+- `Open File` 改成較安全的開檔策略
+- `Settings / Diagnostics` 改成主畫面內嵌的 `Advanced Settings` panel，不再額外跳視窗
+- `rg` 搜尋字串加上 `-e` 與 `--` 防護
+- 搜尋文字不再落地保存到 settings
+- 新增安全與 preview theme 的回歸測試
+
+下面的 `Source Bundle` 仍然保留，但它是歷史快照，不保證和目前 `master` 完全同步。若整理層、README、實際原始碼與快照內容不一致，應以 `README.md`、目前原始碼與測試為準。
 
 ---
 
 ## 1. 工具定位
 
-這是一個以 Python 撰寫的桌面 GUI 搜尋工具，核心目標是：
+這是一個以 Python 與 Tkinter 製作的 Windows 桌面全文搜尋工具，核心目標是：
 
 - 優先使用 `ripgrep (rg)` 做全文搜尋
-- 若 `rg` 不可用，退回 `grep`
 - 支援多資料夾搜尋
 - 支援 include / exclude pattern
 - 支援大小寫、regex、編碼、最大檔案大小控制
-- 即時串流顯示搜尋結果
-- 顯示命中行周邊 context 與基本語法高亮
+- 搜尋中即時串流顯示結果
+- 提供命中內容預覽與簡化語法高亮
+- 若本機缺少 `rg`，可從 GUI 內引導使用 `winget` 安裝
 
-這個設計符合 MVP 原則：
+這個設計仍然符合 MVP 原則：
 
-- 搜尋核心明確
-- GUI 與 service 有基本分層
-- 可用 fallback 保持可執行性
-- 沒有過度抽象
+- 搜尋主線清楚
+- GUI 與 service 已做基本分層
+- 設定可保存，方便重複使用
+- 變更可漸進，不需要整包重寫
 
 ---
 
@@ -59,8 +67,9 @@
 
 | 檔案 | 作用 |
 | --- | --- |
-| `rg_search_gui/engine_detection.py` | 偵測 `rg` / `grep` 與版本 |
-| `rg_search_gui/search_service.py` | 執行搜尋、處理串流結果、fallback 搜尋 |
+| `rg_search_gui/engine_detection.py` | 偵測 bundled `rg`、WinGet Links、PATH 內的 `rg/grep` 與版本 |
+| `rg_search_gui/installer_service.py` | Windows `winget` 安裝 `ripgrep` 的流程封裝 |
+| `rg_search_gui/search_service.py` | 執行搜尋、處理串流結果、`rg` 安全參數組裝與 fallback 搜尋 |
 | `rg_search_gui/search_helpers.py` | 純函式：pattern、排序、context、match span、語法 span |
 | `rg_search_gui/settings_service.py` | 設定讀寫與預設值處理 |
 
@@ -68,7 +77,14 @@
 
 | 檔案 | 作用 |
 | --- | --- |
-| `rg_search_gui/ui.py` | Tkinter 介面、事件處理、結果預覽、搜尋流程協調 |
+| `rg_search_gui/ui.py` | Tkinter 介面、事件處理、結果預覽、theme 切換、inline settings/diagnostics panel、搜尋流程協調與安全開檔 |
+
+### 測試層
+
+| 檔案 | 作用 |
+| --- | --- |
+| `tests/test_security_guards.py` | 驗證 `rg` 參數防護與安全開檔策略 |
+| `tests/test_preview_themes.py` | 驗證 preview theme 名稱與 palette 結構 |
 
 ---
 
@@ -79,24 +95,35 @@
   -> main.py
   -> ui.launch_app()
   -> 建立 RgSearchApp
-  -> 偵測 rg / grep
-  -> 載入設定
+  -> 載入 settings（資料夾、pattern、theme、字體等）
+  -> 偵測 rg / grep 與版本
+  -> 套用 preview theme
   -> 等待使用者輸入搜尋條件
 
 按下 Search
   -> UI 驗證輸入
   -> 建立 SearchOptions
   -> 啟動背景執行緒
-  -> 優先走 rg 串流搜尋
-     -> 逐筆 match 回傳
-     -> UI 即時刷新結果樹
-  -> 若不是 rg，改走 grep fallback
-  -> 搜尋完成後更新摘要、預覽、篩選器
+  -> 若為 rg engine
+     -> 用 --json 串流搜尋
+     -> 使用 -e 與 -- 隔離查詢字串
+     -> 逐筆 match 回傳給 UI
+  -> 若 rg 不可用或啟動失敗
+     -> 退回 Python fallback 搜尋
+  -> UI 即時刷新結果樹、預覽、摘要與篩選器
+
+按下 Open File
+  -> 若是可執行 / 腳本檔
+     -> 改為在檔案總管定位
+  -> 若是常見文字檔
+     -> 以文字編輯器開啟
+  -> 其他類型
+     -> 交給系統預設關聯開啟
 ```
 
 ---
 
-## 4. 關鍵資料模型
+## 4. 關鍵資料模型與設定
 
 ### `SearchOptions`
 
@@ -135,18 +162,38 @@
 - 行內容
 - 是否為命中行
 
+### 設定落地策略
+
+目前會保存：
+
+- folders
+- include / exclude
+- recursive / case-sensitive / regex
+- encoding / max file size
+- display lines / font size
+- code theme
+- file filter / sort 等 UI 參數
+
+目前不再保存：
+
+- 搜尋文字 `Containing Text`
+
+這樣可以降低敏感查詢字串留在 `%APPDATA%
+g-search-gui\settings.json` 的風險。
+
 ---
 
 ## 5. 核心設計拆解
 
 ### Engine Detection
 
-`engine_detection.py` 的策略是：
+`engine_detection.py` 的策略目前是：
 
-1. 先找打包進 resources 的 `rg`
-2. 再找系統 PATH 裡的 `rg`
-3. 最後找 `grep`
-4. 都沒有就標記 unavailable
+1. 先找 bundled `rg`
+2. Windows 下再找 WinGet Links 內的 `rg.exe`
+3. 再找 PATH 裡的 `rg`
+4. 最後才看 `grep`
+5. 都沒有就標記 unavailable
 
 這個順序合理，因為它優先保證 GUI 可攜性，再使用系統環境。
 
@@ -159,8 +206,10 @@
 - 按檔案彙整命中
 - 透過 `emit_result` 讓 UI 可即時更新
 - 支援停止事件 `stop_event`
+- 用 `-e` 與 `--` 防止以 `-` 開頭的查詢字串被當成 CLI 旗標
+- 當 `rg` 不可用時，退回 Python 讀檔 fallback
 
-這是整個專案最重要的 service 層。
+這一層是整個專案最重要的 service 層，也是最近安全補強的核心。
 
 ### Search Helpers
 
@@ -173,20 +222,33 @@
 - 計算 query 命中範圍
 - 計算語法高亮範圍
 
-這一層可測性最好，也最適合之後補單元測試。
+這一層可測性最好，也最適合之後繼續補單元測試。
+
+### Installer Service
+
+`installer_service.py` 將 `winget` 安裝流程包成獨立 service：
+
+- 優先依序嘗試多個 `BurntSushi.ripgrep` package id
+- 回傳成功 / 失敗結果
+- 將安裝日誌串流回 GUI
+
+這樣可以避免把安裝邏輯全塞在 UI 事件裡。
 
 ### UI
 
-`ui.py` 同時處理：
+`ui.py` 目前同時處理：
 
 - 表單輸入
 - 搜尋執行緒啟動與取消
+- 安裝流程觸發與日誌視窗
 - 樹狀結果更新
 - 預覽渲染
+- preview theme 切換
+- 安全開檔策略
 - 快取已讀檔案內容
 - 設定儲存
 
-它目前是控制中心，功能很多，但仍維持在單一桌面工具可接受範圍。
+它仍然是控制中心，功能很多，但目前還在單一桌面工具可接受範圍。
 
 ---
 
@@ -195,33 +257,49 @@
 - 有明確資料模型，不是全程用 dict 亂傳
 - `search_helpers.py` 與 `search_service.py` 已先做邏輯分離
 - UI 有使用背景執行緒，避免搜尋時卡死主畫面
-- 支援 `rg` 與 `grep` fallback，穩定性較高
-- 預覽區有 line cache，避免重複讀檔成本
+- 版本號已在 GUI 可見，利於公開 MVP 管理
+- 預覽區支援多組 code theme，展示與可讀性更好
+- `Open File` 已加安全防護，避免直接執行可疑腳本
+- 搜尋文字不再持久化，減少敏感資訊殘留
+- 已有針對安全與 theme 的回歸測試
 
 ---
 
 ## 7. 目前較需要注意的點
 
-### 1. `ui.py` 偏大
+### 1. `ui.py` 仍偏大
 
 UI 檔案同時承擔：
 
 - 控制流程
 - 狀態管理
 - 視圖更新
+- preview theme 管理
 - 部分搜尋協調責任
 
-短期沒問題，但若你還想加更多功能，這裡會先膨脹。
+短期沒問題，但若你繼續加更多設定與互動，這裡仍然會先膨脹。
 
-### 2. 語法高亮是簡化版規則
+### 2. 語法高亮仍是簡化版規則
 
-`_find_syntax_spans()` 使用 regex 與關鍵字表做高亮，不是真正 parser。
+`_find_syntax_spans()` 目前仍使用 regex 與關鍵字表做高亮，不是真正 parser。
 優點是輕量，缺點是精準度有限。
 
-### 3. 文件目前只有 source dump，沒有設計摘要
+### 3. fallback 路徑仍偏保守
 
-這也是這次整理的主因。
-如果後續還要維護，建議保留這一層導讀，不要再只留 raw source bundle。
+雖然介面層仍有 `grep` / `unavailable` 的概念，但實際 fallback 執行目前是 Python 讀檔搜尋，不是完整外部 `grep` 流程。
+這是合理的 MVP 選擇，但規格上應明確知道目前 fallback 不是完整 shell 工具鏈。
+
+### 4. 測試覆蓋仍不算完整
+
+現在已補進安全與 theme 的測試，但仍缺：
+
+- UI 互動層更完整的整合測試
+- settings 保存與還原測試
+- 搜尋結果呈現的回歸測試
+
+### 5. 後段 `Source Bundle` 是歷史快照
+
+這份規格書後半段保留了歷史合併快照，方便讀程式，但不應再被視為唯一事實來源。
 
 ---
 
@@ -229,15 +307,22 @@ UI 檔案同時承擔：
 
 如果你要再往下整理，我建議順序如下：
 
-1. 先補 `ui.py` 的子區塊說明
-2. 再把 `search_service.py` 的 `rg` / `grep fallback` 流程各自畫清楚
-3. 最後才考慮把 `ui.py` 再拆成 `view` / `controller`
+1. 先把 preview theme 與 preview rendering 抽出較清楚的子區塊
+2. 再把安全開檔策略與搜尋 service 的 guard 補成更完整測試
+3. 如果之後要做 `.exe`，補上打包規格、授權文件與 release 流程
+4. 最後才考慮把 `ui.py` 再拆成 `view` / `controller`
 
 不建議現在直接大拆，因為這會增加維護風險，而且目前主線功能已經能跑。
 
 ---
 
-## 9. 完整原始碼
+## 9. 歷史原始碼快照
+
+以下保留原本合併的 `Source Bundle` 歷史快照，方便直接查程式細節；若與目前 `master` 不一致，請以目前原始碼與測試為準。
+
+---
+
+## 9. 歷史原始碼快照
 
 以下保留原本合併的 Source Bundle，方便直接查程式細節。
 

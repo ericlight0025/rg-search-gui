@@ -111,13 +111,13 @@ Use the `Settings` menu when you want to adjust search behavior or inspect the c
 
 ### Menu items
 
-- `Search Settings`: opens the search settings dialog
-- `Diagnostics`: shows the detected engine, executable path, version, settings path, and folder count
+- `Advanced Settings`: toggles the inline settings panel in the main window
+- `Diagnostics`: expands the same panel and refreshes the detected engine, executable path, version, settings path, and folder count
 - `Install ripgrep (rg)`: starts the Windows `winget` install flow manually
 
-![Search Settings dialog](assets/search-settings-dialog.png)
+![Advanced Settings panel](assets/search-settings-dialog.png)
 
-### Search Settings fields
+### Advanced Settings fields
 
 - `Recursive`: search subfolders
 - `Case-sensitive`: match exact letter casing
@@ -127,7 +127,7 @@ Use the `Settings` menu when you want to adjust search behavior or inspect the c
 - `Display lines`: controls how many context lines are shown in preview
 - `Font size`: adjusts the table and preview font size
 
-When you close the settings dialog, the app saves the current settings automatically.
+The panel stays inside the main window, so you can adjust settings without losing the current results view. Settings are still saved automatically during normal app workflow.
 
 ## 7. Search Results
 
