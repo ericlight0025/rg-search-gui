@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rg-search-gui"
+version = "0.1.0"
+description = "Desktop multi-folder text search GUI powered by ripgrep, Python, and Tkinter"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Javalight" }]
+license = { text = "MIT" }
+keywords = ["ripgrep", "search", "gui", "tkinter", "windows", "python"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: Microsoft :: Windows",
+  "Intended Audience :: Developers",
+  "Topic :: Text Processing :: Indexing",
+  "Topic :: Software Development :: User Interfaces",
+]
+dependencies = []
+
+[project.optional-dependencies]
+build = ["pyinstaller>=6.0"]
+
+[project.scripts]
+rg-search-gui = "rg_search_gui.main:main"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["rg_search_gui*"]
