@@ -16,6 +16,7 @@ from typing import Iterable
 import tkinter as tk
 from tkinter import filedialog, font as tkfont, messagebox, ttk
 
+from rg_search_gui import __version__
 from rg_search_gui.engine_detection import _detect_engine_info
 from rg_search_gui.installer_service import install_ripgrep_with_winget
 from rg_search_gui.models import ContextLine, EngineInfo, SearchFileResult, SearchHit, SearchOptions
@@ -116,7 +117,7 @@ def apply_dark_theme(root: tk.Misc) -> None:
 class RgSearchApp(tk.Tk):
     def __init__(self) -> None:
         super().__init__()
-        self.title("RG Search GUI")
+        self.title(f"RG Search GUI {__version__}")
         self.geometry("1500x920")
         self.minsize(1200, 720)
         apply_dark_theme(self)
@@ -326,6 +327,7 @@ class RgSearchApp(tk.Tk):
 
     def _show_diagnostics(self) -> None:
         lines = [
+            f"App Version: {__version__}",
             f"Engine: {self._engine_info.label}",
             f"Executable: {self._engine_info.executable or 'N/A'}",
             f"Version: {self._engine_info.version or 'unknown'}",
@@ -1072,5 +1074,6 @@ class RgSearchApp(tk.Tk):
 def launch_app() -> None:
     app = RgSearchApp()
     app.mainloop()
+
 
 
