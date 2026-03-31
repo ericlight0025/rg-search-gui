@@ -2,6 +2,7 @@
 
 這是一個以 Python 與 Tkinter 製作的桌面全文搜尋工具，主要目標是讓你不用一直切回終端機，也能快速跨多個資料夾搜尋文字內容。
 維護者：`Javalight`
+這是一個獨立開發的 GUI 工具，與 `ripgrep` 專案無官方隸屬、合作或背書關係。
 
 English README: [../../README.md](../../README.md)
 

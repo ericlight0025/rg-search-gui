@@ -4,6 +4,7 @@
 > Search multiple folders, filter files, stream results, and preview matches without living in the terminal.
 
 Maintained by `Javalight`.
+This project is an independent GUI tool and is not affiliated with or endorsed by the `ripgrep` project.
 
 ## Traditional Chinese Quick Start
 
