@@ -78,6 +78,42 @@ def apply_dark_theme(root: tk.Misc) -> None:
         foreground=[("active", DARK_TEXT)],
     )
     style.configure(
+        "Primary.TButton",
+        background=ACCENT,
+        foreground="#0b1020",
+        borderwidth=0,
+        padding=(10, 8),
+    )
+    style.map(
+        "Primary.TButton",
+        background=[("active", "#92b5ff"), ("pressed", "#5d8ff2"), ("disabled", "#47516a")],
+        foreground=[("active", "#0b1020"), ("pressed", "#0b1020"), ("disabled", "#d6d9e0")],
+    )
+    style.configure(
+        "Danger.TButton",
+        background="#b85c6b",
+        foreground="#fff7f8",
+        borderwidth=0,
+        padding=(10, 8),
+    )
+    style.map(
+        "Danger.TButton",
+        background=[("active", "#cf7281"), ("pressed", "#9e4957"), ("disabled", "#4a3338")],
+        foreground=[("active", "#fff7f8"), ("pressed", "#fff7f8"), ("disabled", "#d0c5c7")],
+    )
+    style.configure(
+        "Tool.TButton",
+        background="#26303d",
+        foreground="#cfe0ff",
+        borderwidth=1,
+        padding=(10, 8),
+    )
+    style.map(
+        "Tool.TButton",
+        background=[("active", "#324154"), ("pressed", "#1e2733"), ("disabled", "#232730")],
+        foreground=[("active", "#e6efff"), ("pressed", "#cfe0ff"), ("disabled", "#8892a1")],
+    )
+    style.configure(
         "TEntry",
         fieldbackground=DARK_ENTRY,
         foreground=DARK_TEXT,
@@ -442,11 +478,11 @@ class RgSearchApp(tk.Tk):
 
         actions = ttk.Frame(form)
         actions.grid(row=1, column=4, rowspan=2, columnspan=2, sticky="ns", padx=(8, 0))
-        self.start_button = ttk.Button(actions, text="Start", command=self.start_search, width=12)
+        self.start_button = ttk.Button(actions, text="Start", command=self.start_search, width=12, style="Primary.TButton")
         self.start_button.pack(fill="x", pady=(0, 8))
-        self.cancel_button = ttk.Button(actions, text="Cancel", command=self.cancel_search, width=12, state="disabled")
+        self.cancel_button = ttk.Button(actions, text="Cancel", command=self.cancel_search, width=12, state="disabled", style="Danger.TButton")
         self.cancel_button.pack(fill="x", pady=(0, 8))
-        self.install_rg_button = ttk.Button(actions, text="安裝 rg", command=self.install_rg, width=12)
+        self.install_rg_button = ttk.Button(actions, text="安裝 rg", command=self.install_rg, width=12, style="Tool.TButton")
         self.install_rg_button.pack(fill="x", pady=(0, 8))
         ttk.Button(actions, text="Clear", command=self._clear_results, width=12).pack(fill="x")
 
