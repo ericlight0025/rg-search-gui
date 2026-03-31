@@ -20,6 +20,7 @@ from rg_search_gui import __version__
 from rg_search_gui.engine_detection import _detect_engine_info
 from rg_search_gui.installer_service import install_ripgrep_with_winget
 from rg_search_gui.models import ContextLine, EngineInfo, SearchFileResult, SearchHit, SearchOptions
+from rg_search_gui.privacy_helpers import display_root_label, redact_path_for_display
 from rg_search_gui.search_helpers import (
     _build_context_lines,
     _build_context_lines_from_lines,
@@ -414,9 +415,9 @@ class RgSearchApp(tk.Tk):
         return [
             f"App Version: {__version__}",
             f"Engine: {self._engine_info.label}",
-            f"Executable: {self._engine_info.executable or 'N/A'}",
+            f"Executable: {redact_path_for_display(self._engine_info.executable)}",
             f"Version: {self._engine_info.version or 'unknown'}",
-            f"Settings file: {_get_settings_path()}",
+            f"Settings file: {redact_path_for_display(_get_settings_path())}",
             f"Folders: {len(self._folder_paths)}",
             f"Code Theme: {self.code_theme_var.get()}",
         ]
@@ -828,7 +829,7 @@ class RgSearchApp(tk.Tk):
             return
         self.folder_listbox.delete(0, "end")
         for folder in self._folder_paths:
-            self.folder_listbox.insert("end", folder)
+            self.folder_listbox.insert("end", redact_path_for_display(folder))
         if select_indexes:
             for index in select_indexes:
                 if 0 <= index < len(self._folder_paths):
@@ -1072,10 +1073,10 @@ class RgSearchApp(tk.Tk):
         self._update_filter_options()
         self._refresh_file_tree()
         self.status_var.set(f"搜尋中，已找到 {len(results)} 個檔案")
-        self.summary_var.set(f"目前 {total_hits} 筆結果 | {current_item}")
+        self.summary_var.set(f"目前 {total_hits} 筆結果 | {redact_path_for_display(current_item)}")
 
     def _update_filter_options(self) -> None:
-        roots = ["All", *sorted({result.source_folder.name for result in self._all_results})]
+        roots = ["All", *sorted({display_root_label(result.source_folder) for result in self._all_results})]
         extensions = ["All", *sorted({result.full_path.suffix or "<none>" for result in self._all_results})]
         if hasattr(self, "root_filter_combo"):
             self.root_filter_combo.configure(values=roots)
@@ -1150,7 +1151,7 @@ class RgSearchApp(tk.Tk):
         all_context_lines = self._get_cached_context_lines(result, self._get_display_lines())
         self._current_context_lines = all_context_lines
         self.preview_info_var.set(
-            f"{result.source_folder.name} / {result.relative_path} | hits: {len(result.hits)} | lines: {len(all_context_lines)}"
+            f"{display_root_label(result.source_folder)} / {result.relative_path} | hits: {len(result.hits)} | lines: {len(all_context_lines)}"
         )
         self._render_line_preview(result, all_context_lines, select_first_hit=True)
 
@@ -1280,6 +1281,13 @@ class RgSearchApp(tk.Tk):
 def launch_app() -> None:
     app = RgSearchApp()
     app.mainloop()
+
+
+
+
+
+
+
 
 
 

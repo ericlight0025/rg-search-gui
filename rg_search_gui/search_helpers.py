@@ -9,6 +9,7 @@ from collections.abc import Iterable
 from pathlib import Path
 
 from rg_search_gui.models import ContextLine, SearchFileResult, SearchHit
+from rg_search_gui.privacy_helpers import display_root_label
 
 
 def _split_patterns(raw_text: str) -> list[str]:
@@ -64,7 +65,7 @@ def _filter_file_results(
         haystack = f"{result.full_path.name} {result.relative_path} {result.full_path}"
         if not _matches_filter_text(haystack, filter_text):
             continue
-        if root_filter not in {"", "All"} and result.source_folder.name != root_filter:
+        if root_filter not in {"", "All"} and display_root_label(result.source_folder) != root_filter:
             continue
         suffix = result.full_path.suffix or "<none>"
         if extension_filter not in {"", "All"} and suffix != extension_filter:
@@ -81,7 +82,7 @@ def _unique_result_roots(results: list[SearchFileResult]) -> set[Path]:
 
 def _display_file_name(result: SearchFileResult, include_root: bool) -> str:
     if include_root:
-        return f"{result.source_folder.name} / {result.full_path.name}"
+        return f"{display_root_label(result.source_folder)} / {result.full_path.name}"
     return result.full_path.name
 
 
@@ -232,3 +233,6 @@ def _sorted_results(results: Iterable[SearchFileResult], sort_mode: str) -> list
     else:
         materialized.sort(key=lambda item: (-len(item.hits), item.full_path.name.lower()))
     return materialized
+
+
+
