@@ -125,6 +125,19 @@ The launcher tries `py` first, then `python` from `PATH`.
 └─ run_rg_search_gui.bat
 ```
 
+## Module Guide
+
+- `run_rg_search_gui.bat`: Windows launcher that starts the app with `py` or `python` from `PATH`
+- `rg_search_gui/__main__.py`: module entry point for `python -m rg_search_gui`
+- `rg_search_gui/main.py`: lightweight app launcher that calls the Tkinter UI entry
+- `rg_search_gui/ui.py`: Tkinter UI, search workflow coordination, preview rendering, and user actions
+- `rg_search_gui/models.py`: shared data models for search options, hits, results, context lines, and engine info
+- `rg_search_gui/search_service.py`: search execution with `rg`, `grep`, and Python fallback helpers
+- `rg_search_gui/search_helpers.py`: filtering, sorting, preview context, match spans, and lightweight syntax highlight helpers
+- `rg_search_gui/engine_detection.py`: detect the available search engine executable and version
+- `rg_search_gui/installer_service.py`: Windows `winget` install flow for `ripgrep`
+- `rg_search_gui/settings_service.py`: load and save persisted user settings
+
 ## Packaging Notes
 
 For a public MVP, keep the repository source-first.
