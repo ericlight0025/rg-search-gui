@@ -34,15 +34,15 @@ Quick links:
 
 ![Search results view](docs/assets/search-result.png)
 
-*Search results view with multi-folder search, file filters, and code preview.*
+*Search across multiple folders with live results, quick filters, and side-by-side code preview.*
 
 ![Settings menu](docs/assets/settings-menu.png)
 
-*Settings menu with direct access to the inline Advanced Settings panel, diagnostics, and `rg` installation flow.*
+*Keep the workflow in one place: open advanced settings, refresh diagnostics, or start the `rg` install flow from the same menu.*
 
 ![Advanced Settings panel](docs/assets/search-settings-dialog.png)
 
-*Inline Advanced Settings panel with search options, preview theme selection, and diagnostics in the main window.*
+*Tune regex, encoding, file-size limits, preview theme, and diagnostics without leaving the current results view.*
 
 ## Why It Exists
 
