@@ -138,6 +138,15 @@ The launcher tries `py` first, then `python` from `PATH`.
 - `rg_search_gui/installer_service.py`: Windows `winget` install flow for `ripgrep`
 - `rg_search_gui/settings_service.py`: load and save persisted user settings
 
+## Search Flow
+
+1. Start the app with `run_rg_search_gui.bat`, `python -m rg_search_gui`, or the installed `rg-search-gui` command.
+2. The UI loads persisted settings and detects whether `rg`, `grep`, or no engine is available.
+3. The user selects folders, enters `Containing Text`, and adjusts options such as include / exclude patterns, regex, encoding, and file size limits.
+4. The UI builds a `SearchOptions` payload and starts the search in a background thread so the window stays responsive.
+5. `search_service.py` runs `rg --json` when available, or falls back to `grep` / Python helpers, then streams grouped matches back to the UI.
+6. The UI refreshes the file list, preview panel, filters, and summary fields while the search is running and after it completes.
+
 ## Packaging Notes
 
 For a public MVP, keep the repository source-first.
