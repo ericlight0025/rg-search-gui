@@ -44,16 +44,17 @@ from rg_search_gui.search_service import (
 from rg_search_gui.settings_service import _get_settings_path, _load_settings_file, _save_settings_file
 
 
-DARK_BG = "#0b1017"
-DARK_PANEL = "#121924"
-DARK_PANEL_ALT = "#192230"
-DARK_ENTRY = "#0f1620"
-DARK_TABLE = "#0f1722"
-DARK_TEXT = "#e6edf3"
-ACCENT = "#4fb3ff"
-ACCENT_ALT = "#ffb454"
-MUTED = "#8da1b9"
-BORDER = "#273244"
+# One Dark Pro 色票（暖灰底，藍 accent、紫強調）
+DARK_BG = "#282c34"
+DARK_PANEL = "#21252b"
+DARK_PANEL_ALT = "#2c313a"
+DARK_ENTRY = "#1b1e24"
+DARK_TABLE = "#21252b"
+DARK_TEXT = "#abb2bf"
+ACCENT = "#61afef"
+ACCENT_ALT = "#c678dd"
+MUTED = "#7f848e"
+BORDER = "#3b4048"
 OBSIDIAN_PREVIEW_BG = "#1e1f22"
 OBSIDIAN_PREVIEW_FG = "#d8dee9"
 OBSIDIAN_COMMENT = "#7f848e"
@@ -173,7 +174,7 @@ def apply_dark_theme(root: tk.Misc) -> None:
     style.configure(
         "HeroBadge.TLabel",
         background=ACCENT_ALT,
-        foreground="#121924",
+        foreground="#21252b",
         font=metric_font,
         padding=(10, 4),
     )
@@ -198,44 +199,44 @@ def apply_dark_theme(root: tk.Misc) -> None:
     )
     style.map(
         "TButton",
-        background=[("active", "#233043"), ("pressed", "#131a24"), ("disabled", DARK_PANEL_ALT)],
+        background=[("active", "#2c313a"), ("pressed", "#1b1e24"), ("disabled", DARK_PANEL_ALT)],
         foreground=[("active", DARK_TEXT)],
     )
     style.configure(
         "Primary.TButton",
         background=ACCENT,
-        foreground="#081018",
+        foreground="#1b1e24",
         borderwidth=0,
         padding=(10, 8),
     )
     style.map(
         "Primary.TButton",
-        background=[("active", "#7fcbff"), ("pressed", "#2395e8"), ("disabled", "#41546a")],
-        foreground=[("active", "#081018"), ("pressed", "#081018"), ("disabled", "#c8d4df")],
+        background=[("active", "#82c0f5"), ("pressed", "#4a9fe0"), ("disabled", "#3e4451")],
+        foreground=[("active", "#1b1e24"), ("pressed", "#1b1e24"), ("disabled", "#9da5b4")],
     )
     style.configure(
         "Danger.TButton",
-        background="#c55d57",
-        foreground="#fff7f6",
+        background="#e06c75",
+        foreground="#1b1e24",
         borderwidth=0,
         padding=(10, 8),
     )
     style.map(
         "Danger.TButton",
-        background=[("active", "#d8746f"), ("pressed", "#9c4440"), ("disabled", "#4a3433")],
-        foreground=[("active", "#fff7f6"), ("pressed", "#fff7f6"), ("disabled", "#d6c8c5")],
+        background=[("active", "#e88b92"), ("pressed", "#c5535c"), ("disabled", "#5c3b3e")],
+        foreground=[("active", "#1b1e24"), ("pressed", "#1b1e24"), ("disabled", "#d6c8c5")],
     )
     style.configure(
         "Tool.TButton",
         background=DARK_PANEL_ALT,
-        foreground="#d3e8ff",
+        foreground=DARK_TEXT,
         borderwidth=1,
         padding=(10, 8),
     )
     style.map(
         "Tool.TButton",
-        background=[("active", "#243040"), ("pressed", "#131a24"), ("disabled", "#1f2530")],
-        foreground=[("active", "#eef6ff"), ("pressed", "#d3e8ff"), ("disabled", "#8594a7")],
+        background=[("active", "#2c313a"), ("pressed", "#1b1e24"), ("disabled", DARK_PANEL)],
+        foreground=[("active", "#c8cdd6"), ("pressed", DARK_TEXT), ("disabled", MUTED)],
     )
     style.configure(
         "TEntry",
@@ -314,7 +315,7 @@ def apply_dark_theme(root: tk.Misc) -> None:
     )
     style.map(
         "App.TNotebook.Tab",
-        background=[("selected", DARK_PANEL_ALT), ("active", "#223043"), ("!selected", DARK_PANEL)],
+        background=[("selected", DARK_PANEL_ALT), ("active", "#2c313a"), ("!selected", DARK_PANEL)],
         foreground=[("selected", DARK_TEXT), ("active", DARK_TEXT)],
     )
     style.configure(
@@ -334,7 +335,7 @@ def apply_dark_theme(root: tk.Misc) -> None:
         padding=(8, 8),
         font=section_font,
     )
-    style.map("Treeview", background=[("selected", ACCENT)], foreground=[("selected", "#000000")])
+    style.map("Treeview", background=[("selected", ACCENT)], foreground=[("selected", "#1b1e24")])
     style.configure(
         "Results.Treeview",
         background=DARK_TABLE,
@@ -357,7 +358,7 @@ def apply_dark_theme(root: tk.Misc) -> None:
     root.option_add("*Listbox.background", DARK_ENTRY)
     root.option_add("*Listbox.foreground", DARK_TEXT)
     root.option_add("*Listbox.selectBackground", ACCENT)
-    root.option_add("*Listbox.selectForeground", "#000000")
+    root.option_add("*Listbox.selectForeground", "#1b1e24")
 
 
 def _open_path_safely(file_path: Path) -> str | None:
@@ -384,7 +385,7 @@ def _create_dark_menu(master: tk.Misc) -> tk.Menu:
         bg=DARK_PANEL,
         fg=DARK_TEXT,
         activebackground=ACCENT,
-        activeforeground="#081018",
+        activeforeground="#1b1e24",
         disabledforeground=MUTED,
         relief="flat",
         borderwidth=0,
@@ -1141,7 +1142,7 @@ class RgSearchApp(tk.Tk):
             foreground=OBSIDIAN_PREVIEW_FG,
             insertbackground=DARK_TEXT,
             selectbackground=ACCENT,
-            selectforeground="#000000",
+            selectforeground="#1b1e24",
         )
         preview_vsb = ttk.Scrollbar(preview_frame, orient="vertical", command=self.line_preview.yview)
         preview_hsb = ttk.Scrollbar(preview_frame, orient="horizontal", command=self.line_preview.xview)
