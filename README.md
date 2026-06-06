@@ -34,15 +34,15 @@ Quick links:
 
 ![Search results view](docs/assets/search-result.png)
 
-*Search across multiple folders with live results, quick filters, and side-by-side code preview.*
+*Use a VS Code-style workspace layout: search on the left, matched files on the upper right, and preview on the lower right.*
 
 ![Settings menu](docs/assets/settings-menu.png)
 
-*Keep the workflow in one place: open advanced settings, refresh diagnostics, or start the `rg` install flow from the same menu.*
+*The `設定` entry can still jump to diagnostics or the install flow, while the main configuration now lives in the left sidebar tabs.*
 
 ![Advanced Settings panel](docs/assets/search-settings-dialog.png)
 
-*Tune regex, encoding, file-size limits, preview theme, and diagnostics without leaving the current results view.*
+*Switch between `搜尋` and `設定` in the left sidebar without leaving the current results view.*
 
 ## Why It Exists
 
@@ -56,6 +56,7 @@ It is built for the common cases where opening a GUI is faster than rebuilding t
 - Case-sensitive and regex search
 - Stream results while searching
 - Preview hits with lightweight syntax highlighting
+- VS Code-inspired split layout with a dedicated left search sidebar
 - Auto-detect `rg` on Windows
 - Prompt to install `rg` with live `winget` logs when it is missing
 - Use a portable Windows launcher that does not hardcode a local Python path
@@ -153,10 +154,10 @@ The launcher tries `py` first, then `python` from `PATH`.
 
 1. Start the app with `run_rg_search_gui.bat`, `python -m rg_search_gui`, or the installed `rg-search-gui` command.
 2. The UI loads persisted settings and detects whether `rg`, `grep`, or no engine is available.
-3. The user selects folders, enters `Containing Text`, and adjusts options such as include / exclude patterns, regex, encoding, and file size limits.
+3. The user selects folders and enters the search text from the left `搜尋` tab, then switches to the left `設定` tab if regex, encoding, preview theme, or file size limits need adjustment.
 4. The UI builds a `SearchOptions` payload and starts the search in a background thread so the window stays responsive.
 5. `search_service.py` runs `rg --json` when available, or falls back to `grep` / Python helpers, then streams grouped matches back to the UI.
-6. The UI refreshes the file list, preview panel, filters, and summary fields while the search is running and after it completes.
+6. The UI refreshes the upper-right file list, lower-right preview panel, filters, and summary fields while the search is running and after it completes.
 
 ## Packaging Notes
 

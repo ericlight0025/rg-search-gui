@@ -13,6 +13,7 @@ English README: [../../README.md](../../README.md)
 - 支援大小寫敏感與 regex
 - 支援搜尋中即時串流顯示結果
 - 支援命中內容預覽與簡單語法高亮
+- 主畫面採用接近 VS Code 的左右工作區配置
 - Windows 下若缺少 `rg`，可在 GUI 內提示安裝並顯示安裝日誌
 
 ## 執行方式

@@ -40,14 +40,18 @@ rg-search-gui
 Recommended minimal validation:
 
 1. Start the app
-2. Add a small folder in `Folders`
-3. Enter a clear keyword in `Containing Text`
-4. Click `Start`
-5. Confirm that the left panel shows matched files and the right panel shows preview content
+2. Stay on the left `搜尋` tab and add a small folder
+3. Enter a clear keyword in the search text field
+4. Click `開始搜尋`
+5. Confirm that the upper-right panel shows matched files and the lower-right panel shows preview content
 
 ## 4. Main Fields
 
-### Folders
+### Search text
+
+The keyword or pattern to search for. This field is required.
+
+### Root folders
 
 The list of folders to search. Multiple folders are supported.
 
@@ -66,10 +70,6 @@ Excludes folders or files, for example:
 ```text
 .git;node_modules;__pycache__
 ```
-
-### Containing Text
-
-The keyword or pattern to search for. This field is required.
 
 ### Recursive
 
@@ -105,19 +105,25 @@ You can also trigger the install flow manually from the `安裝 rg` button or th
 
 ## 6. Settings and Diagnostics
 
-Use the `Settings` menu when you want to adjust search behavior or inspect the current engine state.
+The main window now uses a VS Code-style layout:
+
+- left sidebar: `搜尋` and `設定` tabs
+- upper-right panel: matched file list
+- lower-right panel: preview and hit navigation
+
+Use the left `設定` tab when you want to adjust search behavior or inspect the current engine state.
 
 ![Settings menu](assets/settings-menu.png)
 
-### Menu items
+### Menu support
 
-- `Advanced Settings`: toggles the inline settings panel in the main window
-- `Diagnostics`: expands the same panel and refreshes the detected engine, executable path, version, settings path, and folder count
-- `Install ripgrep (rg)`: starts the Windows `winget` install flow manually
+- `設定`: jumps to the left settings tab
+- `診斷資訊`: opens the same tab and refreshes engine, executable path, version, settings path, and folder count
+- `安裝 ripgrep (rg)`: starts the Windows `winget` install flow manually
 
 ![Advanced Settings panel](assets/search-settings-dialog.png)
 
-### Advanced Settings fields
+### Left `設定` tab fields
 
 - `Recursive`: search subfolders
 - `Case-sensitive`: match exact letter casing
@@ -127,17 +133,17 @@ Use the `Settings` menu when you want to adjust search behavior or inspect the c
 - `Display lines`: controls how many context lines are shown in preview
 - `Font size`: adjusts the table and preview font size
 
-The panel stays inside the main window, so you can adjust settings without losing the current results view. Settings are still saved automatically during normal app workflow.
+The settings tab stays inside the main window, so you can adjust options without losing the current results view. Settings are still saved automatically during normal app workflow.
 
 ## 7. Search Results
 
-### Left result panel
+### Upper-right file list
 
 - shows matched files
 - supports filters by file name, root, extension, and hit count
 - supports sorting
 
-### Right preview panel
+### Lower-right preview panel
 
 - shows matching lines with context
 - supports next / previous hit navigation

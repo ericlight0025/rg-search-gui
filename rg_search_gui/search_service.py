@@ -127,7 +127,10 @@ def _search_with_rg_stream(
                 if not raw_line.strip():
                     continue
 
-                payload = json.loads(raw_line)
+                try:
+                    payload = json.loads(raw_line)
+                except json.JSONDecodeError:
+                    continue
                 if payload.get("type") != "match":
                     continue
 

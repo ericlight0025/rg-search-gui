@@ -44,13 +44,16 @@ from rg_search_gui.search_service import (
 from rg_search_gui.settings_service import _get_settings_path, _load_settings_file, _save_settings_file
 
 
-DARK_BG = "#16181d"
-DARK_PANEL = "#20242b"
-DARK_ENTRY = "#252a33"
-DARK_TABLE = "#1e1f22"
-DARK_TEXT = "#dcddde"
-ACCENT = "#7aa2f7"
-MUTED = "#8b949e"
+DARK_BG = "#0b1017"
+DARK_PANEL = "#121924"
+DARK_PANEL_ALT = "#192230"
+DARK_ENTRY = "#0f1620"
+DARK_TABLE = "#0f1722"
+DARK_TEXT = "#e6edf3"
+ACCENT = "#4fb3ff"
+ACCENT_ALT = "#ffb454"
+MUTED = "#8da1b9"
+BORDER = "#273244"
 OBSIDIAN_PREVIEW_BG = "#1e1f22"
 OBSIDIAN_PREVIEW_FG = "#d8dee9"
 OBSIDIAN_COMMENT = "#7f848e"
@@ -134,56 +137,115 @@ def apply_dark_theme(root: tk.Misc) -> None:
     except Exception:
         pass
 
+    default_font = tkfont.nametofont("TkDefaultFont")
+    default_font.configure(size=10)
+    tkfont.nametofont("TkTextFont").configure(size=10)
+    tkfont.nametofont("TkFixedFont").configure(size=11)
+
+    title_font = default_font.copy()
+    title_font.configure(size=16, weight="bold")
+    section_font = default_font.copy()
+    section_font.configure(weight="bold")
+    metric_font = default_font.copy()
+    metric_font.configure(size=11, weight="bold")
+    root._title_font = title_font
+    root._section_font = section_font
+    root._metric_font = metric_font
+
     root.configure(bg=DARK_BG)
+    root.option_add("*tearOff", False)
     style.configure("TFrame", background=DARK_BG)
-    style.configure("TLabel", background=DARK_BG, foreground=DARK_TEXT)
-    style.configure("TButton", background=DARK_PANEL, foreground=DARK_TEXT, borderwidth=1)
+    style.configure("Sidebar.TFrame", background=DARK_PANEL)
+    style.configure("Hero.TFrame", background=DARK_PANEL_ALT)
+    style.configure("Panel.TFrame", background=DARK_PANEL)
+    style.configure("Status.TFrame", background=DARK_PANEL_ALT)
+    style.configure("TLabel", background=DARK_BG, foreground=DARK_TEXT, font=default_font)
+    style.configure("Sidebar.TLabel", background=DARK_PANEL, foreground=DARK_TEXT, font=default_font)
+    style.configure("SidebarMuted.TLabel", background=DARK_PANEL, foreground=MUTED, font=default_font)
+    style.configure("Hero.TLabel", background=DARK_PANEL_ALT, foreground=DARK_TEXT, font=default_font)
+    style.configure("HeroMuted.TLabel", background=DARK_PANEL_ALT, foreground=MUTED, font=default_font)
+    style.configure(
+        "HeroTitle.TLabel",
+        background=DARK_PANEL_ALT,
+        foreground=DARK_TEXT,
+        font=title_font,
+    )
+    style.configure(
+        "HeroBadge.TLabel",
+        background=ACCENT_ALT,
+        foreground="#121924",
+        font=metric_font,
+        padding=(10, 4),
+    )
+    style.configure("Panel.TLabel", background=DARK_PANEL, foreground=DARK_TEXT, font=default_font)
+    style.configure("PanelMuted.TLabel", background=DARK_PANEL, foreground=MUTED, font=default_font)
+    style.configure(
+        "PanelSection.TLabel",
+        background=DARK_PANEL,
+        foreground=DARK_TEXT,
+        font=section_font,
+    )
+    style.configure("Status.TLabel", background=DARK_PANEL_ALT, foreground=DARK_TEXT, font=default_font)
+    style.configure("StatusMuted.TLabel", background=DARK_PANEL_ALT, foreground=MUTED, font=default_font)
+    style.configure(
+        "TButton",
+        background=DARK_PANEL_ALT,
+        foreground=DARK_TEXT,
+        borderwidth=0,
+        padding=(10, 8),
+        focusthickness=1,
+        focuscolor=ACCENT,
+    )
     style.map(
         "TButton",
-        background=[("active", "#4b4b4b"), ("pressed", ACCENT)],
+        background=[("active", "#233043"), ("pressed", "#131a24"), ("disabled", DARK_PANEL_ALT)],
         foreground=[("active", DARK_TEXT)],
     )
     style.configure(
         "Primary.TButton",
         background=ACCENT,
-        foreground="#0b1020",
+        foreground="#081018",
         borderwidth=0,
         padding=(10, 8),
     )
     style.map(
         "Primary.TButton",
-        background=[("active", "#92b5ff"), ("pressed", "#5d8ff2"), ("disabled", "#47516a")],
-        foreground=[("active", "#0b1020"), ("pressed", "#0b1020"), ("disabled", "#d6d9e0")],
+        background=[("active", "#7fcbff"), ("pressed", "#2395e8"), ("disabled", "#41546a")],
+        foreground=[("active", "#081018"), ("pressed", "#081018"), ("disabled", "#c8d4df")],
     )
     style.configure(
         "Danger.TButton",
-        background="#b85c6b",
-        foreground="#fff7f8",
+        background="#c55d57",
+        foreground="#fff7f6",
         borderwidth=0,
         padding=(10, 8),
     )
     style.map(
         "Danger.TButton",
-        background=[("active", "#cf7281"), ("pressed", "#9e4957"), ("disabled", "#4a3338")],
-        foreground=[("active", "#fff7f8"), ("pressed", "#fff7f8"), ("disabled", "#d0c5c7")],
+        background=[("active", "#d8746f"), ("pressed", "#9c4440"), ("disabled", "#4a3433")],
+        foreground=[("active", "#fff7f6"), ("pressed", "#fff7f6"), ("disabled", "#d6c8c5")],
     )
     style.configure(
         "Tool.TButton",
-        background="#26303d",
-        foreground="#cfe0ff",
+        background=DARK_PANEL_ALT,
+        foreground="#d3e8ff",
         borderwidth=1,
         padding=(10, 8),
     )
     style.map(
         "Tool.TButton",
-        background=[("active", "#324154"), ("pressed", "#1e2733"), ("disabled", "#232730")],
-        foreground=[("active", "#e6efff"), ("pressed", "#cfe0ff"), ("disabled", "#8892a1")],
+        background=[("active", "#243040"), ("pressed", "#131a24"), ("disabled", "#1f2530")],
+        foreground=[("active", "#eef6ff"), ("pressed", "#d3e8ff"), ("disabled", "#8594a7")],
     )
     style.configure(
         "TEntry",
         fieldbackground=DARK_ENTRY,
         foreground=DARK_TEXT,
         insertcolor=DARK_TEXT,
+        bordercolor=BORDER,
+        lightcolor=BORDER,
+        darkcolor=BORDER,
+        padding=(8, 7),
     )
     style.configure(
         "TCombobox",
@@ -191,26 +253,108 @@ def apply_dark_theme(root: tk.Misc) -> None:
         background=DARK_ENTRY,
         foreground=DARK_TEXT,
         arrowsize=16,
+        bordercolor=BORDER,
+        lightcolor=BORDER,
+        darkcolor=BORDER,
     )
-    style.map("TCombobox", fieldbackground=[("readonly", DARK_ENTRY)])
-    style.configure("TCheckbutton", background=DARK_BG, foreground=DARK_TEXT)
-    style.configure("TLabelframe", background=DARK_BG, foreground=DARK_TEXT)
-    style.configure("TLabelframe.Label", background=DARK_BG, foreground=DARK_TEXT)
+    style.map(
+        "TCombobox",
+        fieldbackground=[("readonly", DARK_ENTRY)],
+        selectbackground=[("readonly", DARK_ENTRY)],
+        selectforeground=[("readonly", DARK_TEXT)],
+    )
+    style.configure("TCheckbutton", background=DARK_PANEL, foreground=DARK_TEXT)
+    style.map("TCheckbutton", background=[("active", DARK_PANEL)])
+    style.configure(
+        "TLabelframe",
+        background=DARK_PANEL,
+        foreground=DARK_TEXT,
+        bordercolor=BORDER,
+        lightcolor=BORDER,
+        darkcolor=BORDER,
+    )
+    style.configure("TLabelframe.Label", background=DARK_PANEL, foreground=DARK_TEXT, font=section_font)
+    style.configure(
+        "Panel.TLabelframe",
+        background=DARK_PANEL,
+        foreground=DARK_TEXT,
+        bordercolor=BORDER,
+        lightcolor=BORDER,
+        darkcolor=BORDER,
+        relief="flat",
+    )
+    style.configure(
+        "Panel.TLabelframe.Label",
+        background=DARK_PANEL,
+        foreground=DARK_TEXT,
+        font=section_font,
+    )
     style.configure("TProgressbar", troughcolor=DARK_PANEL, background=ACCENT)
+    style.configure("App.TNotebook", background=DARK_PANEL, borderwidth=0, tabmargins=(0, 0, 0, 0))
+    style.configure(
+        "App.TNotebook",
+        background=DARK_PANEL,
+        borderwidth=0,
+        tabmargins=(0, 0, 0, 0),
+        lightcolor=DARK_PANEL,
+        darkcolor=DARK_PANEL,
+        bordercolor=BORDER,
+    )
+    style.configure(
+        "App.TNotebook.Tab",
+        background=DARK_PANEL,
+        foreground=MUTED,
+        padding=(16, 10),
+        borderwidth=0,
+        font=section_font,
+        lightcolor=DARK_PANEL,
+        darkcolor=DARK_PANEL,
+        bordercolor=BORDER,
+        focuscolor=DARK_PANEL,
+    )
+    style.map(
+        "App.TNotebook.Tab",
+        background=[("selected", DARK_PANEL_ALT), ("active", "#223043"), ("!selected", DARK_PANEL)],
+        foreground=[("selected", DARK_TEXT), ("active", DARK_TEXT)],
+    )
     style.configure(
         "Treeview",
         background=DARK_TABLE,
         fieldbackground=DARK_TABLE,
         foreground=DARK_TEXT,
         borderwidth=1,
+        bordercolor=BORDER,
+        lightcolor=BORDER,
+        darkcolor=BORDER,
     )
-    style.configure("Treeview.Heading", background="#404040", foreground=DARK_TEXT)
+    style.configure(
+        "Treeview.Heading",
+        background=DARK_PANEL_ALT,
+        foreground=DARK_TEXT,
+        padding=(8, 8),
+        font=section_font,
+    )
     style.map("Treeview", background=[("selected", ACCENT)], foreground=[("selected", "#000000")])
+    style.configure(
+        "Results.Treeview",
+        background=DARK_TABLE,
+        fieldbackground=DARK_TABLE,
+        foreground=DARK_TEXT,
+        borderwidth=0,
+        rowheight=28,
+    )
+    style.configure(
+        "Results.Treeview.Heading",
+        background=DARK_PANEL_ALT,
+        foreground=DARK_TEXT,
+        padding=(8, 8),
+        font=section_font,
+    )
 
     root.option_add("*Text.background", DARK_TABLE)
     root.option_add("*Text.foreground", DARK_TEXT)
     root.option_add("*Text.insertBackground", DARK_TEXT)
-    root.option_add("*Listbox.background", DARK_TABLE)
+    root.option_add("*Listbox.background", DARK_ENTRY)
     root.option_add("*Listbox.foreground", DARK_TEXT)
     root.option_add("*Listbox.selectBackground", ACCENT)
     root.option_add("*Listbox.selectForeground", "#000000")
@@ -231,6 +375,20 @@ def _open_path_safely(file_path: Path) -> str | None:
         return "open"
     except Exception:
         return None
+
+
+def _create_dark_menu(master: tk.Misc) -> tk.Menu:
+    return tk.Menu(
+        master,
+        tearoff=False,
+        bg=DARK_PANEL,
+        fg=DARK_TEXT,
+        activebackground=ACCENT,
+        activeforeground="#081018",
+        disabledforeground=MUTED,
+        relief="flat",
+        borderwidth=0,
+    )
 
 
 class RgSearchApp(tk.Tk):
@@ -383,13 +541,13 @@ class RgSearchApp(tk.Tk):
         self._install_log_text.see("end")
 
     def _build_menu(self) -> None:
-        menubar = tk.Menu(self)
-        settings_menu = tk.Menu(menubar, tearoff=False)
-        settings_menu.add_command(label="Advanced Settings", command=self._open_settings_dialog)
+        menubar = _create_dark_menu(self)
+        settings_menu = _create_dark_menu(menubar)
+        settings_menu.add_command(label="開啟設定頁籤", command=self._open_settings_dialog)
         settings_menu.add_separator()
-        settings_menu.add_command(label="Diagnostics", command=self._show_diagnostics)
-        settings_menu.add_command(label="Install ripgrep (rg)", command=self.install_rg)
-        menubar.add_cascade(label="Settings", menu=settings_menu)
+        settings_menu.add_command(label="診斷資訊", command=self._show_diagnostics)
+        settings_menu.add_command(label="安裝 ripgrep (rg)", command=self.install_rg)
+        menubar.add_cascade(label="設定", menu=settings_menu)
         self.config(menu=menubar)
 
     def _open_settings_dialog(self) -> None:
@@ -399,17 +557,25 @@ class RgSearchApp(tk.Tk):
         self._set_settings_panel_visible(not self._settings_panel_visible)
 
     def _set_settings_panel_visible(self, visible: bool) -> None:
-        if not hasattr(self, "settings_panel"):
+        if not hasattr(self, "sidebar_notebook") or not hasattr(self, "settings_panel"):
             return
         self._refresh_diagnostics_info()
         if visible:
-            self.settings_panel.grid()
+            self.sidebar_notebook.select(self.settings_panel)
             self._settings_panel_visible = True
             if hasattr(self, "settings_recursive_check"):
                 self.settings_recursive_check.focus_set()
             return
-        self.settings_panel.grid_remove()
+        if hasattr(self, "search_panel"):
+            self.sidebar_notebook.select(self.search_panel)
         self._settings_panel_visible = False
+
+    def _on_sidebar_tab_changed(self, _event: tk.Event) -> None:
+        if not hasattr(self, "sidebar_notebook") or not hasattr(self, "settings_panel"):
+            return
+        self._settings_panel_visible = self.sidebar_notebook.select() == str(self.settings_panel)
+        if self._settings_panel_visible:
+            self._refresh_diagnostics_info()
 
     def _build_diagnostics_lines(self) -> list[str]:
         return [
@@ -519,188 +685,414 @@ class RgSearchApp(tk.Tk):
         self._save_settings()
 
     def _build_ui(self) -> None:
-        outer = ttk.Frame(self, padding=10)
+        outer = ttk.Frame(self, padding=12)
         outer.pack(fill="both", expand=True)
         outer.columnconfigure(0, weight=1)
-        outer.rowconfigure(2, weight=1)
+        outer.rowconfigure(0, weight=1)
 
-        form = ttk.LabelFrame(outer, text="搜尋條件", padding=10)
-        form.grid(row=0, column=0, sticky="ew")
-        form.columnconfigure(1, weight=1)
-        form.columnconfigure(3, weight=1)
+        workspace = ttk.Frame(outer)
+        workspace.grid(row=0, column=0, sticky="nsew")
+        workspace.columnconfigure(0, weight=1)
+        workspace.rowconfigure(0, weight=1)
 
-        ttk.Label(form, text="Folders").grid(row=0, column=0, sticky="nw", padx=4, pady=6)
-        folder_frame = ttk.Frame(form)
-        folder_frame.grid(row=0, column=1, columnspan=3, sticky="nw", padx=4, pady=6)
+        shell_paned = tk.PanedWindow(
+            workspace,
+            orient=tk.HORIZONTAL,
+            bg=DARK_BG,
+            bd=0,
+            sashrelief=tk.FLAT,
+            sashwidth=6,
+            opaqueresize=True,
+        )
+        shell_paned.grid(row=0, column=0, sticky="nsew")
+
+        self._build_sidebar_area(shell_paned)
+        self._build_results_area(shell_paned)
+        self._build_status_bar(outer)
+
+        self._refresh_diagnostics_info()
+        self.sidebar_notebook.select(self.search_panel)
+
+    def _build_sidebar_area(self, shell_paned: tk.PanedWindow) -> None:
+        sidebar = ttk.Frame(shell_paned, style="Sidebar.TFrame", padding=10)
+        sidebar.configure(width=420)
+        sidebar.columnconfigure(0, weight=1)
+        sidebar.rowconfigure(1, weight=1)
+        shell_paned.add(sidebar, minsize=360)
+
+        hero = ttk.Frame(sidebar, style="Hero.TFrame", padding=(18, 16))
+        hero.grid(row=0, column=0, sticky="ew")
+        hero.columnconfigure(0, weight=1)
+        ttk.Label(hero, text="Workspace Search", style="HeroTitle.TLabel").grid(row=0, column=0, sticky="w")
+        ttk.Label(
+            hero,
+            text="左側定義查詢，右側快速瀏覽檔案與內容。",
+            style="HeroMuted.TLabel",
+        ).grid(row=1, column=0, sticky="w", pady=(4, 0))
+        ttk.Label(hero, textvariable=self.engine_var, style="HeroBadge.TLabel").grid(
+            row=0,
+            column=1,
+            rowspan=2,
+            sticky="e",
+            padx=(12, 0),
+        )
+
+        self.sidebar_notebook = ttk.Notebook(sidebar, style="App.TNotebook")
+        self.sidebar_notebook.grid(row=1, column=0, sticky="nsew", pady=(10, 0))
+        self.search_panel = ttk.Frame(self.sidebar_notebook, style="Sidebar.TFrame", padding=14)
+        self.settings_panel = ttk.Frame(self.sidebar_notebook, style="Sidebar.TFrame", padding=14)
+        self.sidebar_notebook.add(self.search_panel, text="搜尋")
+        self.sidebar_notebook.add(self.settings_panel, text="設定")
+        self.sidebar_notebook.bind("<<NotebookTabChanged>>", self._on_sidebar_tab_changed)
+
+        self._build_search_tab()
+        self._build_settings_tab()
+
+    def _build_search_tab(self) -> None:
+        self.search_panel.columnconfigure(0, weight=1)
+        self.search_panel.rowconfigure(1, weight=1)
+
+        query_card = ttk.LabelFrame(self.search_panel, text="查詢", padding=12, style="Panel.TLabelframe")
+        query_card.grid(row=0, column=0, sticky="ew")
+        query_card.columnconfigure(0, weight=1)
+        ttk.Label(query_card, text="搜尋文字", style="PanelMuted.TLabel").grid(row=0, column=0, sticky="w")
+        self.search_entry = ttk.Entry(query_card, textvariable=self.text_var)
+        self.search_entry.grid(row=1, column=0, sticky="ew", pady=(6, 0))
+        self.search_entry.bind("<Return>", lambda _event: self.start_search())
+        ttk.Label(
+            query_card,
+            text="支援一般關鍵字與正規表示式，按 Enter 可直接開始搜尋。",
+            style="PanelMuted.TLabel",
+        ).grid(row=2, column=0, sticky="w", pady=(8, 0))
+
+        scope_card = ttk.LabelFrame(self.search_panel, text="搜尋範圍", padding=12, style="Panel.TLabelframe")
+        scope_card.grid(row=1, column=0, sticky="nsew", pady=(10, 0))
+        scope_card.columnconfigure(0, weight=1)
+        scope_card.rowconfigure(2, weight=1)
+        ttk.Label(scope_card, text="根目錄", style="PanelMuted.TLabel").grid(row=0, column=0, sticky="w")
+
+        folder_buttons = ttk.Frame(scope_card, style="Panel.TFrame")
+        folder_buttons.grid(row=1, column=0, sticky="ew", pady=(8, 10))
+        folder_buttons.columnconfigure(0, weight=1)
+        folder_buttons.columnconfigure(1, weight=1)
+        ttk.Button(folder_buttons, text="新增資料夾", command=self._browse_folder).grid(
+            row=0,
+            column=0,
+            sticky="ew",
+            padx=(0, 6),
+            pady=(0, 6),
+        )
+        ttk.Button(folder_buttons, text="加入目前目錄", command=self._add_cwd_folder).grid(
+            row=0,
+            column=1,
+            sticky="ew",
+            pady=(0, 6),
+        )
+        ttk.Button(folder_buttons, text="上移", command=self._move_selected_folder_up).grid(
+            row=1,
+            column=0,
+            sticky="ew",
+            padx=(0, 6),
+            pady=(0, 6),
+        )
+        ttk.Button(folder_buttons, text="下移", command=self._move_selected_folder_down).grid(
+            row=1,
+            column=1,
+            sticky="ew",
+            pady=(0, 6),
+        )
+        ttk.Button(folder_buttons, text="移除", command=self._remove_selected_folders).grid(
+            row=2,
+            column=0,
+            sticky="ew",
+            padx=(0, 6),
+        )
+        ttk.Button(folder_buttons, text="全部清空", command=self._clear_folders).grid(row=2, column=1, sticky="ew")
+
+        folder_frame = ttk.Frame(scope_card, style="Panel.TFrame")
+        folder_frame.grid(row=2, column=0, sticky="nsew")
         folder_frame.columnconfigure(0, weight=1)
-
-        # Place action buttons at the top of the folder area (compact horizontal row)
-        top_buttons = ttk.Frame(folder_frame)
-        top_buttons.grid(row=0, column=0, columnspan=2, sticky="w", pady=(0, 6))
-        ttk.Button(top_buttons, text="Add Folder", command=self._browse_folder, width=12).grid(row=0, column=0, padx=(0, 6))
-        ttk.Button(top_buttons, text="Add CWD", command=self._add_cwd_folder, width=12).grid(row=0, column=1, padx=(0, 6))
-        ttk.Button(top_buttons, text="Move Up", command=self._move_selected_folder_up, width=12).grid(row=0, column=2, padx=(0, 6))
-        ttk.Button(top_buttons, text="Move Down", command=self._move_selected_folder_down, width=12).grid(row=0, column=3, padx=(0, 6))
-        ttk.Button(top_buttons, text="Remove", command=self._remove_selected_folders, width=12).grid(row=0, column=4, padx=(0, 6))
-        ttk.Button(top_buttons, text="Clear All", command=self._clear_folders, width=12).grid(row=0, column=5)
-
+        folder_frame.rowconfigure(0, weight=1)
         self.folder_listbox = tk.Listbox(
             folder_frame,
-            height=5,
-            width=60,
+            height=8,
             selectmode=tk.EXTENDED,
             exportselection=False,
             activestyle="none",
             relief="flat",
-            borderwidth=1,
+            borderwidth=0,
         )
         folder_vsb = ttk.Scrollbar(folder_frame, orient="vertical", command=self.folder_listbox.yview)
         self.folder_listbox.configure(yscrollcommand=folder_vsb.set)
-        self.folder_listbox.grid(row=1, column=0, sticky="nw")
-        folder_vsb.grid(row=1, column=1, sticky="ns")
-
+        self.folder_listbox.grid(row=0, column=0, sticky="nsew")
+        folder_vsb.grid(row=0, column=1, sticky="ns")
         self._refresh_folder_listbox()
         self.folder_listbox.bind("<Button-3>", self._show_folder_context_menu)
 
-        ttk.Label(form, text="Include Files").grid(row=1, column=0, sticky="w", padx=4, pady=6)
-        ttk.Entry(form, textvariable=self.include_var).grid(row=1, column=1, sticky="ew", padx=4, pady=6)
-        ttk.Label(form, text="Exclude Files").grid(row=1, column=2, sticky="w", padx=4, pady=6)
-        ttk.Entry(form, textvariable=self.exclude_var).grid(row=1, column=3, sticky="ew", padx=4, pady=6)
+        ttk.Label(scope_card, text="包含檔案", style="PanelMuted.TLabel").grid(row=3, column=0, sticky="w", pady=(12, 0))
+        ttk.Entry(scope_card, textvariable=self.include_var).grid(row=4, column=0, sticky="ew", pady=(6, 0))
+        ttk.Label(scope_card, text="排除檔案", style="PanelMuted.TLabel").grid(row=5, column=0, sticky="w", pady=(12, 0))
+        ttk.Entry(scope_card, textvariable=self.exclude_var).grid(row=6, column=0, sticky="ew", pady=(6, 0))
 
-        entry = ttk.Entry(form, textvariable=self.text_var)
-        ttk.Label(form, text="Containing Text").grid(row=2, column=0, sticky="w", padx=4, pady=6)
-        entry.grid(row=2, column=1, columnspan=3, sticky="ew", padx=4, pady=6)
-        entry.bind("<Return>", lambda _event: self.start_search())
-
-        actions = ttk.Frame(form)
-        actions.grid(row=1, column=4, rowspan=2, columnspan=2, sticky="ns", padx=(8, 0))
-        self.start_button = ttk.Button(actions, text="Start", command=self.start_search, width=12, style="Primary.TButton")
-        self.start_button.pack(fill="x", pady=(0, 8))
-        self.cancel_button = ttk.Button(actions, text="Cancel", command=self.cancel_search, width=12, state="disabled", style="Danger.TButton")
-        self.cancel_button.pack(fill="x", pady=(0, 8))
-        self.install_rg_button = ttk.Button(actions, text="安裝 rg", command=self.install_rg, width=12, style="Tool.TButton")
-        self.install_rg_button.pack(fill="x", pady=(0, 8))
-        ttk.Button(actions, text="Clear", command=self._clear_results, width=12).pack(fill="x")
-
-        self.settings_panel = ttk.LabelFrame(outer, text="Advanced Settings", padding=10)
-        self.settings_panel.grid(row=1, column=0, sticky="ew", pady=(10, 0))
-        self.settings_panel.columnconfigure(0, weight=3)
-        self.settings_panel.columnconfigure(1, weight=2)
-
-        settings_form = ttk.Frame(self.settings_panel)
-        settings_form.grid(row=0, column=0, sticky="ew")
-        settings_form.columnconfigure(1, weight=1)
-        settings_form.columnconfigure(3, weight=1)
-
-        self.settings_recursive_check = ttk.Checkbutton(settings_form, text="Recursive", variable=self.recursive_var)
-        self.settings_recursive_check.grid(row=0, column=0, sticky="w", pady=4, padx=(0, 12))
-        ttk.Checkbutton(settings_form, text="Case-sensitive", variable=self.case_sensitive_var).grid(row=0, column=1, sticky="w", pady=4, padx=(0, 12))
-        ttk.Checkbutton(settings_form, text="Regular Expression", variable=self.regex_var).grid(row=0, column=2, sticky="w", pady=4, padx=(0, 12))
-
-        ttk.Label(settings_form, text="File Encoding").grid(row=1, column=0, sticky="w", pady=(8, 4))
-        ttk.Combobox(
-            settings_form,
-            textvariable=self.encoding_var,
-            values=["Auto", "utf-8", "cp950", "big5", "utf-16"],
-            width=12,
-            state="readonly",
-        ).grid(row=1, column=1, sticky="ew", pady=(8, 4), padx=(0, 12))
-
-        ttk.Label(settings_form, text="Max file size (MB)").grid(row=1, column=2, sticky="w", pady=(8, 4))
-        ttk.Combobox(
-            settings_form,
-            textvariable=self.max_file_size_var,
-            values=["1", "5", "10", "20", "50", "100"],
-            width=12,
-            state="readonly",
-        ).grid(row=1, column=3, sticky="ew", pady=(8, 4))
-
-        ttk.Label(settings_form, text="Display lines").grid(row=2, column=0, sticky="w", pady=4)
-        ttk.Combobox(
-            settings_form,
-            textvariable=self.display_lines_var,
-            values=["1", "3", "5", "7", "9", "11", "15", "21"],
-            width=12,
-        ).grid(row=2, column=1, sticky="ew", pady=4, padx=(0, 12))
-
-        ttk.Label(settings_form, text="Font size").grid(row=2, column=2, sticky="w", pady=4)
-        ttk.Combobox(
-            settings_form,
-            textvariable=self.font_size_var,
-            values=["9", "10", "11", "12", "14", "16", "18", "20"],
-            width=12,
-        ).grid(row=2, column=3, sticky="ew", pady=4)
-
-        ttk.Label(settings_form, text="Code Theme").grid(row=3, column=0, sticky="w", pady=4)
-        ttk.Combobox(
-            settings_form,
-            textvariable=self.code_theme_var,
-            values=list(PREVIEW_THEMES.keys()),
-            width=12,
-            state="readonly",
-        ).grid(row=3, column=1, sticky="ew", pady=4, padx=(0, 12))
-
-        diagnostics_frame = ttk.Frame(self.settings_panel)
-        diagnostics_frame.grid(row=0, column=1, sticky="nsew", padx=(18, 0))
-        diagnostics_frame.columnconfigure(0, weight=1)
-        ttk.Label(diagnostics_frame, text="Diagnostics", foreground=MUTED).grid(row=0, column=0, sticky="w")
-        ttk.Label(
-            diagnostics_frame,
-            textvariable=self.diagnostics_info_var,
-            justify="left",
-            wraplength=420,
-        ).grid(row=1, column=0, sticky="ew", pady=(8, 0))
-        ttk.Button(diagnostics_frame, text="Hide Panel", command=self._toggle_settings_panel, width=12).grid(
-            row=2,
+        actions_card = ttk.LabelFrame(self.search_panel, text="操作", padding=12, style="Panel.TLabelframe")
+        actions_card.grid(row=2, column=0, sticky="ew", pady=(10, 0))
+        actions_card.columnconfigure(0, weight=1)
+        self.start_button = ttk.Button(
+            actions_card,
+            text="開始搜尋",
+            command=self.start_search,
+            style="Primary.TButton",
+        )
+        self.start_button.grid(row=0, column=0, sticky="ew")
+        self.cancel_button = ttk.Button(
+            actions_card,
+            text="取消搜尋",
+            command=self.cancel_search,
+            state="disabled",
+            style="Danger.TButton",
+        )
+        self.cancel_button.grid(row=1, column=0, sticky="ew", pady=(8, 0))
+        self.install_rg_button = ttk.Button(
+            actions_card,
+            text="安裝 rg",
+            command=self.install_rg,
+            style="Tool.TButton",
+        )
+        self.install_rg_button.grid(row=2, column=0, sticky="ew", pady=(8, 0))
+        ttk.Button(actions_card, text="清除結果", command=self._clear_results).grid(
+            row=3,
             column=0,
-            sticky="e",
+            sticky="ew",
+            pady=(8, 0),
+        )
+        ttk.Label(actions_card, textvariable=self.status_var, style="Panel.TLabel").grid(
+            row=4,
+            column=0,
+            sticky="w",
             pady=(12, 0),
         )
+        ttk.Label(
+            actions_card,
+            textvariable=self.summary_var,
+            style="PanelMuted.TLabel",
+            justify="left",
+            wraplength=320,
+        ).grid(row=5, column=0, sticky="w", pady=(4, 0))
 
-        self._refresh_diagnostics_info()
-        self.settings_panel.grid_remove()
+    def _build_settings_tab(self) -> None:
+        self.settings_panel.columnconfigure(0, weight=1)
+        self.settings_panel.rowconfigure(2, weight=1)
 
-        results_frame = ttk.Frame(outer)
-        results_frame.grid(row=2, column=0, sticky="nsew", pady=(10, 0))
-        results_frame.columnconfigure(0, weight=1)
-        results_frame.rowconfigure(0, weight=1)
+        behavior_card = ttk.LabelFrame(self.settings_panel, text="搜尋設定", padding=12, style="Panel.TLabelframe")
+        behavior_card.grid(row=0, column=0, sticky="ew")
+        behavior_card.columnconfigure(0, weight=1)
+        behavior_card.columnconfigure(1, weight=1)
+        self.settings_recursive_check = ttk.Checkbutton(behavior_card, text="遞迴搜尋", variable=self.recursive_var)
+        self.settings_recursive_check.grid(row=0, column=0, sticky="w", pady=(0, 6), padx=(0, 12))
+        ttk.Checkbutton(behavior_card, text="大小寫敏感", variable=self.case_sensitive_var).grid(
+            row=0,
+            column=1,
+            sticky="w",
+            pady=(0, 6),
+        )
+        ttk.Checkbutton(behavior_card, text="使用正規表示式", variable=self.regex_var).grid(
+            row=1,
+            column=0,
+            columnspan=2,
+            sticky="w",
+            pady=(0, 6),
+        )
+        ttk.Label(behavior_card, text="檔案編碼", style="PanelMuted.TLabel").grid(row=2, column=0, sticky="w", pady=(8, 4))
+        ttk.Label(behavior_card, text="最大檔案大小 (MB)", style="PanelMuted.TLabel").grid(row=2, column=1, sticky="w", pady=(8, 4))
+        ttk.Combobox(
+            behavior_card,
+            textvariable=self.encoding_var,
+            values=["Auto", "utf-8", "cp950", "big5", "utf-16"],
+            state="readonly",
+        ).grid(row=3, column=0, sticky="ew", padx=(0, 12))
+        ttk.Combobox(
+            behavior_card,
+            textvariable=self.max_file_size_var,
+            values=["1", "5", "10", "20", "50", "100"],
+            state="readonly",
+        ).grid(row=3, column=1, sticky="ew")
 
-        paned = tk.PanedWindow(results_frame, orient=tk.HORIZONTAL, bg=DARK_BG, sashrelief=tk.RAISED)
-        paned.grid(row=0, column=0, sticky="nsew")
+        preview_card = ttk.LabelFrame(self.settings_panel, text="預覽設定", padding=12, style="Panel.TLabelframe")
+        preview_card.grid(row=1, column=0, sticky="ew", pady=(10, 0))
+        preview_card.columnconfigure(0, weight=1)
+        preview_card.columnconfigure(1, weight=1)
+        ttk.Label(preview_card, text="顯示行數", style="PanelMuted.TLabel").grid(row=0, column=0, sticky="w", pady=(0, 4))
+        ttk.Label(preview_card, text="字體大小", style="PanelMuted.TLabel").grid(row=0, column=1, sticky="w", pady=(0, 4))
+        ttk.Combobox(
+            preview_card,
+            textvariable=self.display_lines_var,
+            values=["1", "3", "5", "7", "9", "11", "15", "21"],
+        ).grid(row=1, column=0, sticky="ew", padx=(0, 12))
+        ttk.Combobox(
+            preview_card,
+            textvariable=self.font_size_var,
+            values=["9", "10", "11", "12", "14", "16", "18", "20"],
+        ).grid(row=1, column=1, sticky="ew")
+        ttk.Label(preview_card, text="程式碼主題", style="PanelMuted.TLabel").grid(
+            row=2,
+            column=0,
+            sticky="w",
+            pady=(10, 4),
+        )
+        ttk.Combobox(
+            preview_card,
+            textvariable=self.code_theme_var,
+            values=list(PREVIEW_THEMES.keys()),
+            state="readonly",
+        ).grid(row=3, column=0, columnspan=2, sticky="ew")
 
-        file_panel = ttk.LabelFrame(paned, text="Matched Files", padding=8)
-        preview_panel = ttk.LabelFrame(paned, text="Code Preview", padding=8)
-        paned.add(file_panel, minsize=380)
-        paned.add(preview_panel, minsize=760)
+        diagnostics_card = ttk.LabelFrame(self.settings_panel, text="診斷資訊", padding=12, style="Panel.TLabelframe")
+        diagnostics_card.grid(row=2, column=0, sticky="nsew", pady=(10, 0))
+        diagnostics_card.columnconfigure(0, weight=1)
+        diagnostics_card.rowconfigure(1, weight=1)
+        ttk.Label(
+            diagnostics_card,
+            text="這裡只顯示狀態資訊，不更動搜尋邏輯。",
+            style="PanelMuted.TLabel",
+        ).grid(row=0, column=0, sticky="w")
+        ttk.Label(
+            diagnostics_card,
+            textvariable=self.diagnostics_info_var,
+            justify="left",
+            style="PanelMuted.TLabel",
+            wraplength=320,
+        ).grid(row=1, column=0, sticky="nw", pady=(8, 0))
+        diagnostics_actions = ttk.Frame(diagnostics_card, style="Panel.TFrame")
+        diagnostics_actions.grid(row=2, column=0, sticky="ew", pady=(12, 0))
+        diagnostics_actions.columnconfigure(0, weight=1)
+        diagnostics_actions.columnconfigure(1, weight=1)
+        ttk.Button(diagnostics_actions, text="回到搜尋", command=self._toggle_settings_panel).grid(
+            row=0,
+            column=0,
+            sticky="ew",
+            padx=(0, 6),
+        )
+        ttk.Button(
+            diagnostics_actions,
+            text="安裝 rg",
+            command=self.install_rg,
+            style="Tool.TButton",
+        ).grid(row=0, column=1, sticky="ew")
 
-        file_filter_frame = ttk.Frame(file_panel)
-        file_filter_frame.grid(row=0, column=0, columnspan=2, sticky="ew", pady=(0, 6))
+    def _build_results_area(self, shell_paned: tk.PanedWindow) -> None:
+        content = ttk.Frame(shell_paned)
+        content.columnconfigure(0, weight=1)
+        content.rowconfigure(0, weight=1)
+        shell_paned.add(content, minsize=760)
+
+        content_paned = tk.PanedWindow(
+            content,
+            orient=tk.VERTICAL,
+            bg=DARK_BG,
+            bd=0,
+            sashrelief=tk.FLAT,
+            sashwidth=6,
+            opaqueresize=True,
+        )
+        content_paned.grid(row=0, column=0, sticky="nsew", padx=(10, 0))
+
+        self._build_file_list_panel(content_paned)
+        self._build_preview_panel(content_paned)
+
+    def _build_status_bar(self, outer: ttk.Frame) -> None:
+        status_frame = ttk.Frame(outer, style="Status.TFrame", padding=(14, 10))
+        status_frame.grid(row=1, column=0, sticky="ew", pady=(10, 0))
+        status_frame.columnconfigure(1, weight=1)
+        status_frame.columnconfigure(2, weight=1)
+        ttk.Label(status_frame, textvariable=self.status_var, style="Status.TLabel").grid(
+            row=0,
+            column=0,
+            sticky="w",
+            padx=(0, 12),
+        )
+        ttk.Label(status_frame, textvariable=self.summary_var, style="StatusMuted.TLabel").grid(
+            row=0,
+            column=1,
+            sticky="w",
+        )
+        ttk.Label(status_frame, textvariable=self.engine_var, style="StatusMuted.TLabel").grid(
+            row=0,
+            column=2,
+            sticky="e",
+        )
+        self.progress = ttk.Progressbar(status_frame, variable=self.progress_var, mode="determinate")
+        self.progress.grid(row=1, column=0, columnspan=3, sticky="ew", pady=(8, 0))
+
+    def _build_file_list_panel(self, content_paned: tk.PanedWindow) -> None:
+        file_panel = ttk.LabelFrame(content_paned, text="檔案列表", padding=12, style="Panel.TLabelframe")
+        content_paned.add(file_panel, minsize=280)
+        file_panel.columnconfigure(0, weight=1)
+        file_panel.rowconfigure(1, weight=1)
+
+        file_filter_frame = ttk.Frame(file_panel, style="Panel.TFrame")
+        file_filter_frame.grid(row=0, column=0, columnspan=2, sticky="ew", pady=(0, 10))
         file_filter_frame.columnconfigure(1, weight=1)
-        ttk.Label(file_filter_frame, text="Filter").grid(row=0, column=0, sticky="w", padx=(0, 6))
+        file_filter_frame.columnconfigure(3, weight=1)
+        file_filter_frame.columnconfigure(5, weight=1)
+        ttk.Label(file_filter_frame, text="篩選", style="PanelMuted.TLabel").grid(row=0, column=0, sticky="w", padx=(0, 6))
         ttk.Entry(file_filter_frame, textvariable=self.file_filter_var).grid(row=0, column=1, sticky="ew")
-        ttk.Label(file_filter_frame, text="Root").grid(row=0, column=2, sticky="w", padx=(12, 6))
-        self.root_filter_combo = ttk.Combobox(file_filter_frame, textvariable=self.root_filter_var, width=14, state="readonly")
+        ttk.Label(file_filter_frame, text="根目錄", style="PanelMuted.TLabel").grid(row=0, column=2, sticky="w", padx=(12, 6))
+        self.root_filter_combo = ttk.Combobox(
+            file_filter_frame,
+            textvariable=self.root_filter_var,
+            state="readonly",
+        )
         self.root_filter_combo.grid(row=0, column=3, sticky="ew")
-        ttk.Label(file_filter_frame, text="Ext").grid(row=1, column=0, sticky="w", padx=(0, 6), pady=(6, 0))
-        self.extension_filter_combo = ttk.Combobox(file_filter_frame, textvariable=self.extension_filter_var, width=12, state="readonly")
-        self.extension_filter_combo.grid(row=1, column=1, sticky="w", pady=(6, 0))
-        ttk.Label(file_filter_frame, text="Min Hits").grid(row=1, column=2, sticky="w", padx=(12, 6), pady=(6, 0))
-        ttk.Combobox(file_filter_frame, textvariable=self.min_hits_var, values=["1", "2", "3", "5", "10", "20"], width=8).grid(row=1, column=3, sticky="w", pady=(6, 0))
-        ttk.Label(file_filter_frame, text="Sort").grid(row=1, column=4, sticky="w", padx=(12, 6), pady=(6, 0))
+        ttk.Label(file_filter_frame, textvariable=self.file_count_var, style="PanelMuted.TLabel").grid(
+            row=0,
+            column=5,
+            sticky="e",
+        )
+        ttk.Label(file_filter_frame, text="副檔名", style="PanelMuted.TLabel").grid(
+            row=1,
+            column=0,
+            sticky="w",
+            padx=(0, 6),
+            pady=(8, 0),
+        )
+        self.extension_filter_combo = ttk.Combobox(
+            file_filter_frame,
+            textvariable=self.extension_filter_var,
+            state="readonly",
+        )
+        self.extension_filter_combo.grid(row=1, column=1, sticky="ew", pady=(8, 0))
+        ttk.Label(file_filter_frame, text="最少命中", style="PanelMuted.TLabel").grid(
+            row=1,
+            column=2,
+            sticky="w",
+            padx=(12, 6),
+            pady=(8, 0),
+        )
+        ttk.Combobox(
+            file_filter_frame,
+            textvariable=self.min_hits_var,
+            values=["1", "2", "3", "5", "10", "20"],
+            state="readonly",
+        ).grid(row=1, column=3, sticky="ew", pady=(8, 0))
+        ttk.Label(file_filter_frame, text="排序", style="PanelMuted.TLabel").grid(
+            row=1,
+            column=4,
+            sticky="w",
+            padx=(12, 6),
+            pady=(8, 0),
+        )
         ttk.Combobox(
             file_filter_frame,
             textvariable=self.sort_var,
             values=["Matches desc", "Matches asc", "Name asc", "Name desc", "Root asc"],
-            width=14,
             state="readonly",
-        ).grid(row=1, column=5, sticky="w", pady=(6, 0))
-        ttk.Label(file_filter_frame, textvariable=self.file_count_var, foreground=MUTED).grid(row=0, column=5, sticky="e", padx=(10, 0))
+        ).grid(row=1, column=5, sticky="ew", pady=(8, 0))
 
         self.file_tree = ttk.Treeview(file_panel, columns=("filename", "matches"), show="headings", style="Results.Treeview")
-        self.file_tree.heading("filename", text="Filename")
-        self.file_tree.heading("matches", text="Matches")
-        self.file_tree.column("filename", width=380, anchor="w")
-        self.file_tree.column("matches", width=90, anchor="center")
+        self.file_tree.heading("filename", text="檔案")
+        self.file_tree.heading("matches", text="命中數")
+        self.file_tree.column("filename", width=420, anchor="w")
+        self.file_tree.column("matches", width=100, anchor="center")
         self.file_tree.bind("<<TreeviewSelect>>", self._on_file_selected)
 
         file_vsb = ttk.Scrollbar(file_panel, orient="vertical", command=self.file_tree.yview)
@@ -709,23 +1101,37 @@ class RgSearchApp(tk.Tk):
         self.file_tree.grid(row=1, column=0, sticky="nsew")
         file_vsb.grid(row=1, column=1, sticky="ns")
         file_hsb.grid(row=2, column=0, sticky="ew")
-        file_panel.columnconfigure(0, weight=1)
-        file_panel.rowconfigure(1, weight=1)
 
-        preview_header = ttk.Frame(preview_panel)
-        preview_header.grid(row=0, column=0, sticky="ew", pady=(0, 6))
+    def _build_preview_panel(self, content_paned: tk.PanedWindow) -> None:
+        preview_panel = ttk.LabelFrame(content_paned, text="內容預覽", padding=12, style="Panel.TLabelframe")
+        content_paned.add(preview_panel, minsize=340)
+        preview_panel.columnconfigure(0, weight=1)
+        preview_panel.rowconfigure(1, weight=1)
+
+        preview_header = ttk.Frame(preview_panel, style="Panel.TFrame")
+        preview_header.grid(row=0, column=0, sticky="ew", pady=(0, 10))
         preview_header.columnconfigure(0, weight=1)
-        ttk.Label(preview_header, textvariable=self.preview_info_var, foreground=MUTED).grid(row=0, column=0, sticky="w")
-        preview_actions = ttk.Frame(preview_header)
+        ttk.Label(preview_header, textvariable=self.preview_info_var, style="PanelMuted.TLabel").grid(
+            row=0,
+            column=0,
+            sticky="w",
+        )
+        preview_actions = ttk.Frame(preview_header, style="Panel.TFrame")
         preview_actions.grid(row=0, column=1, sticky="e")
-        ttk.Button(preview_actions, text="Prev Hit", command=self._focus_previous_hit, width=10).pack(side="left", padx=(0, 6))
-        ttk.Button(preview_actions, text="Next Hit", command=self._focus_next_hit, width=10).pack(side="left", padx=(0, 6))
-        ttk.Button(preview_actions, text="Open File", command=self._open_current_file, width=10).pack(side="left")
-        preview_frame = ttk.Frame(preview_panel)
-        preview_frame.grid(row=1, column=0, columnspan=2, sticky="nsew")
+        ttk.Button(preview_actions, text="上一筆", command=self._focus_previous_hit, style="Tool.TButton").pack(
+            side="left",
+            padx=(0, 6),
+        )
+        ttk.Button(preview_actions, text="下一筆", command=self._focus_next_hit, style="Tool.TButton").pack(
+            side="left",
+            padx=(0, 6),
+        )
+        ttk.Button(preview_actions, text="開啟檔案", command=self._open_current_file, style="Tool.TButton").pack(side="left")
+
+        preview_frame = ttk.Frame(preview_panel, style="Panel.TFrame")
+        preview_frame.grid(row=1, column=0, sticky="nsew")
         preview_frame.columnconfigure(0, weight=1)
         preview_frame.rowconfigure(0, weight=1)
-
         self.line_preview = tk.Text(
             preview_frame,
             wrap="none",
@@ -746,19 +1152,6 @@ class RgSearchApp(tk.Tk):
         self.line_preview.bind("<Double-1>", lambda _event: self._open_current_file())
         self._apply_preview_theme()
         self.line_preview.configure(state="disabled")
-        preview_panel.columnconfigure(0, weight=1)
-        preview_panel.rowconfigure(1, weight=1)
-
-        status_frame = ttk.Frame(outer)
-        status_frame.grid(row=3, column=0, sticky="ew", pady=(10, 0))
-        status_frame.columnconfigure(1, weight=1)
-        status_frame.columnconfigure(2, weight=1)
-        ttk.Label(status_frame, textvariable=self.status_var).grid(row=0, column=0, sticky="w", padx=(0, 12))
-        ttk.Label(status_frame, textvariable=self.summary_var, foreground=MUTED).grid(row=0, column=1, sticky="w")
-        ttk.Label(status_frame, textvariable=self.engine_var, foreground=MUTED).grid(row=0, column=2, sticky="e")
-
-        self.progress = ttk.Progressbar(status_frame, variable=self.progress_var, mode="determinate")
-        self.progress.grid(row=1, column=0, columnspan=3, sticky="ew", pady=(8, 0))
 
     def _browse_folder(self) -> None:
         initial_dir = self._folder_paths[0] if self._folder_paths else str(Path.cwd())
@@ -812,7 +1205,7 @@ class RgSearchApp(tk.Tk):
         if nearest >= 0:
             self.folder_listbox.selection_clear(0, "end")
             self.folder_listbox.selection_set(nearest)
-        menu = tk.Menu(self, tearoff=False)
+        menu = _create_dark_menu(self)
         menu.add_command(label="Move Up", command=self._move_selected_folder_up)
         menu.add_command(label="Move Down", command=self._move_selected_folder_down)
         menu.add_separator()
@@ -1105,12 +1498,13 @@ class RgSearchApp(tk.Tk):
         for item in self.file_tree.get_children():
             self.file_tree.delete(item)
 
+        multiple_roots = len(_unique_result_roots(self._all_results)) > 1
         for result in visible_results:
             self.file_tree.insert(
                 "",
                 "end",
                 iid=str(result.full_path),
-                values=(_display_file_name(result, len(_unique_result_roots(self._all_results)) > 1), len(result.hits)),
+                values=(_display_file_name(result, multiple_roots), len(result.hits)),
             )
 
         self.file_count_var.set(f"檔案：{len(visible_results)}/{len(self._all_results)}")
