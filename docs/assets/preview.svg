@@ -1,0 +1,237 @@
+<svg width="1200" height="680" viewBox="0 0 1200 680" xmlns="http://www.w3.org/2000/svg" font-family="'Courier New', Courier, monospace">
+  <!-- Background -->
+  <rect width="1200" height="680" fill="#282c34"/>
+
+  <!-- ── Header ── -->
+  <rect width="1200" height="44" fill="#21252b"/>
+  <rect y="43" width="1200" height="1" fill="#3b4048"/>
+  <circle cx="20" cy="22" r="4" fill="#61afef"/>
+  <text x="32" y="27" font-family="'Segoe UI',system-ui,sans-serif" font-size="13" font-weight="600" fill="#abb2bf">Workspace Search</text>
+  <!-- Engine badge -->
+  <rect x="940" y="12" width="148" height="20" rx="3" fill="#2c313a" stroke="#3b4048" stroke-width="1"/>
+  <circle cx="954" cy="22" r="3" fill="#98c379"/>
+  <text x="962" y="27" font-size="11" fill="#7f848e">ripgrep 14.1.0</text>
+  <!-- Scan indicator -->
+  <text x="1100" y="27" font-family="'Segoe UI',system-ui,sans-serif" font-size="11" fill="#7f848e">搜尋中</text>
+  <rect x="1146" y="19" width="42" height="5" rx="2" fill="#2c313a"/>
+  <rect x="1154" y="19" width="22" height="5" rx="2" fill="#61afef" opacity="0.8"/>
+
+  <!-- ── Sidebar (x=0, w=280) ── -->
+  <rect x="0" y="44" width="280" height="596" fill="#21252b"/>
+  <rect x="279" y="44" width="1" height="596" fill="#3b4048"/>
+  <!-- Tabs -->
+  <rect x="0" y="44" width="280" height="40" fill="#21252b"/>
+  <line x1="0" y1="84" x2="280" y2="84" stroke="#3b4048" stroke-width="1"/>
+  <text x="18" y="70" font-family="'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600" fill="#61afef">搜尋</text>
+  <rect x="18" y="82" width="30" height="2" fill="#61afef"/>
+  <text x="76" y="70" font-family="'Segoe UI',system-ui,sans-serif" font-size="12" fill="#7f848e">設定</text>
+
+  <!-- Search input -->
+  <text x="14" y="106" font-family="'Segoe UI',system-ui,sans-serif" font-size="10" font-weight="600" fill="#7f848e">搜尋文字</text>
+  <rect x="14" y="110" width="252" height="30" rx="3" fill="#1b1e24" stroke="#3b4048" stroke-width="1"/>
+  <text x="24" y="130" font-size="12" fill="#abb2bf">grouped_results</text>
+  <!-- cursor blink -->
+  <rect x="147" y="116" width="1" height="16" fill="#abb2bf" opacity="0.8"/>
+
+  <!-- Toggle chips -->
+  <rect x="14" y="148" width="78" height="24" rx="3" fill="#2c313a" stroke="#3b4048" stroke-width="1"/>
+  <text x="23" y="164" font-family="'Segoe UI',system-ui,sans-serif" font-size="11" fill="#7f848e">Aa 大小寫</text>
+  <rect x="98" y="148" width="74" height="24" rx="3" fill="#1e3147" stroke="#61afef" stroke-width="1"/>
+  <text x="107" y="164" font-family="'Segoe UI',system-ui,sans-serif" font-size="11" fill="#61afef">·* 正規式</text>
+  <rect x="178" y="148" width="62" height="24" rx="3" fill="#1e3147" stroke="#61afef" stroke-width="1"/>
+  <text x="187" y="164" font-family="'Segoe UI',system-ui,sans-serif" font-size="11" fill="#61afef">↳ 遞迴</text>
+
+  <line x1="14" y1="182" x2="266" y2="182" stroke="#3b4048" stroke-width="1"/>
+
+  <!-- Folder list -->
+  <text x="14" y="200" font-family="'Segoe UI',system-ui,sans-serif" font-size="10" font-weight="600" fill="#7f848e">搜尋範圍</text>
+  <rect x="14" y="204" width="252" height="58" rx="3" fill="#1b1e24" stroke="#3b4048" stroke-width="1"/>
+  <rect x="14" y="204" width="252" height="28" rx="3" fill="#2c313a"/>
+  <text x="26" y="222" font-size="11" fill="#abb2bf">▸ ~/Projects/rg-search-gui</text>
+  <text x="26" y="248" font-size="11" fill="#7f848e">▸ ~/Documents/notes</text>
+
+  <!-- Folder buttons -->
+  <rect x="14" y="270" width="122" height="26" rx="3" fill="#2c313a" stroke="#3b4048" stroke-width="1"/>
+  <text x="24" y="287" font-family="'Segoe UI',system-ui,sans-serif" font-size="11" fill="#abb2bf">+ 新增資料夾</text>
+  <rect x="142" y="270" width="124" height="26" rx="3" fill="#2c313a" stroke="#3b4048" stroke-width="1"/>
+  <text x="152" y="287" font-family="'Segoe UI',system-ui,sans-serif" font-size="11" fill="#abb2bf">+ 目前目錄</text>
+
+  <line x1="14" y1="308" x2="266" y2="308" stroke="#3b4048" stroke-width="1"/>
+
+  <!-- Include/Exclude inputs -->
+  <text x="14" y="326" font-family="'Segoe UI',system-ui,sans-serif" font-size="10" font-weight="600" fill="#7f848e">包含檔案</text>
+  <rect x="14" y="330" width="252" height="28" rx="3" fill="#1b1e24" stroke="#3b4048" stroke-width="1"/>
+  <text x="24" y="348" font-size="12" fill="#abb2bf">*.*</text>
+
+  <text x="14" y="374" font-family="'Segoe UI',system-ui,sans-serif" font-size="10" font-weight="600" fill="#7f848e">排除路徑</text>
+  <rect x="14" y="378" width="252" height="28" rx="3" fill="#1b1e24" stroke="#3b4048" stroke-width="1"/>
+  <text x="24" y="396" font-size="11" fill="#7f848e">.git;node_modules;__pycache__</text>
+
+  <line x1="14" y1="418" x2="266" y2="418" stroke="#3b4048" stroke-width="1"/>
+
+  <!-- Start button -->
+  <rect x="14" y="426" width="252" height="34" rx="3" fill="#61afef"/>
+  <text x="90" y="448" font-family="'Segoe UI',system-ui,sans-serif" font-size="13" font-weight="600" fill="#1b1e24">▶  開始搜尋</text>
+  <!-- Cancel button -->
+  <rect x="14" y="468" width="252" height="28" rx="3" fill="#2c313a" stroke="#e06c75" stroke-width="1"/>
+  <text x="96" y="486" font-family="'Segoe UI',system-ui,sans-serif" font-size="12" fill="#e06c75">◼  取消搜尋</text>
+
+  <!-- ── Results panel (x=280, w=300) ── -->
+  <rect x="280" y="44" width="300" height="596" fill="#282c34"/>
+  <line x1="580" y1="44" x2="580" y2="640" stroke="#3b4048" stroke-width="1"/>
+
+  <!-- Results header -->
+  <line x1="280" y1="84" x2="580" y2="84" stroke="#3b4048" stroke-width="1"/>
+  <text x="294" y="70" font-family="'Segoe UI',system-ui,sans-serif" font-size="11" font-weight="600" fill="#7f848e">結果</text>
+  <text x="522" y="70" font-size="11" fill="#61afef">12 / 40</text>
+
+  <!-- Filter row -->
+  <rect x="294" y="91" width="160" height="26" rx="3" fill="#1b1e24" stroke="#3b4048" stroke-width="1"/>
+  <text x="304" y="108" font-size="11" fill="#7f848e">篩選檔名…</text>
+  <rect x="460" y="91" width="106" height="26" rx="3" fill="#1b1e24" stroke="#3b4048" stroke-width="1"/>
+  <text x="470" y="108" font-family="'Segoe UI',system-ui,sans-serif" font-size="11" fill="#7f848e">All  ▾</text>
+  <line x1="280" y1="124" x2="580" y2="124" stroke="#3b4048" stroke-width="1"/>
+
+  <!-- File row 1 — selected -->
+  <rect x="280" y="125" width="300" height="48" fill="#1e2a36"/>
+  <rect x="280" y="125" width="3" height="48" fill="#61afef"/>
+  <line x1="280" y1="172" x2="580" y2="172" stroke="#3b4048" stroke-width="1" opacity="0.6"/>
+  <text x="294" y="145" font-size="12" fill="#61afef">search_service.py</text>
+  <text x="294" y="162" font-family="'Segoe UI',system-ui,sans-serif" font-size="10" fill="#7f848e">rg_search_gui /</text>
+  <rect x="524" y="133" width="34" height="18" rx="9" fill="#61afef"/>
+  <text x="531" y="146" font-family="'Segoe UI',system-ui,sans-serif" font-size="11" font-weight="700" fill="#1b1e24">23</text>
+
+  <!-- File row 2 -->
+  <line x1="280" y1="220" x2="580" y2="220" stroke="#3b4048" stroke-width="1" opacity="0.4"/>
+  <text x="294" y="193" font-size="12" fill="#abb2bf">ui.py</text>
+  <text x="294" y="210" font-family="'Segoe UI',system-ui,sans-serif" font-size="10" fill="#7f848e">rg_search_gui /</text>
+  <rect x="533" y="181" width="26" height="18" rx="9" fill="#f6d365"/>
+  <text x="540" y="194" font-family="'Segoe UI',system-ui,sans-serif" font-size="11" font-weight="700" fill="#000">8</text>
+
+  <!-- File row 3 -->
+  <line x1="280" y1="268" x2="580" y2="268" stroke="#3b4048" stroke-width="1" opacity="0.4"/>
+  <text x="294" y="241" font-size="12" fill="#abb2bf">search_helpers.py</text>
+  <text x="294" y="258" font-family="'Segoe UI',system-ui,sans-serif" font-size="10" fill="#7f848e">rg_search_gui /</text>
+  <rect x="533" y="229" width="26" height="18" rx="9" fill="#f6d365"/>
+  <text x="540" y="242" font-family="'Segoe UI',system-ui,sans-serif" font-size="11" font-weight="700" fill="#000">5</text>
+
+  <!-- File row 4 -->
+  <line x1="280" y1="316" x2="580" y2="316" stroke="#3b4048" stroke-width="1" opacity="0.4"/>
+  <text x="294" y="289" font-size="12" fill="#abb2bf">models.py</text>
+  <text x="294" y="306" font-family="'Segoe UI',system-ui,sans-serif" font-size="10" fill="#7f848e">rg_search_gui /</text>
+  <rect x="533" y="277" width="26" height="18" rx="9" fill="#f6d365"/>
+  <text x="540" y="290" font-family="'Segoe UI',system-ui,sans-serif" font-size="11" font-weight="700" fill="#000">2</text>
+
+  <!-- File row 5 -->
+  <line x1="280" y1="364" x2="580" y2="364" stroke="#3b4048" stroke-width="1" opacity="0.4"/>
+  <text x="294" y="337" font-size="12" fill="#abb2bf">engine_detection.py</text>
+  <text x="294" y="354" font-family="'Segoe UI',system-ui,sans-serif" font-size="10" fill="#7f848e">rg_search_gui /</text>
+  <rect x="533" y="325" width="26" height="18" rx="9" fill="#f6d365"/>
+  <text x="540" y="338" font-family="'Segoe UI',system-ui,sans-serif" font-size="11" font-weight="700" fill="#000">1</text>
+
+  <!-- ── Preview panel (x=580, w=620) ── -->
+  <rect x="580" y="44" width="620" height="596" fill="#1e1f22"/>
+
+  <!-- Preview header -->
+  <rect x="580" y="44" width="620" height="50" fill="#21252b"/>
+  <line x1="580" y1="93" x2="1200" y2="93" stroke="#3b4048" stroke-width="1"/>
+  <text x="596" y="67" font-size="13" font-weight="500" fill="#abb2bf">search_service.py</text>
+  <text x="596" y="84" font-family="'Segoe UI',system-ui,sans-serif" font-size="10" fill="#7f848e">rg_search_gui /  ·  命中 23 筆  ·  lines: 38</text>
+  <!-- Preview action buttons -->
+  <rect x="966" y="55" width="60" height="22" rx="3" fill="#2c313a" stroke="#3b4048" stroke-width="1"/>
+  <text x="974" y="70" font-family="'Segoe UI',system-ui,sans-serif" font-size="11" fill="#7f848e">↑ 上一筆</text>
+  <rect x="1032" y="55" width="60" height="22" rx="3" fill="#2c313a" stroke="#3b4048" stroke-width="1"/>
+  <text x="1040" y="70" font-family="'Segoe UI',system-ui,sans-serif" font-size="11" fill="#7f848e">↓ 下一筆</text>
+  <rect x="1098" y="55" width="66" height="22" rx="3" fill="#2c313a" stroke="#3b4048" stroke-width="1"/>
+  <text x="1106" y="70" font-family="'Segoe UI',system-ui,sans-serif" font-size="11" fill="#7f848e">⬡ 開啟檔案</text>
+
+  <!-- line sep -->
+  <line x1="636" y1="94" x2="636" y2="630" stroke="#3b4048" stroke-width="1" opacity="0.4"/>
+
+  <!-- Code lines (line-num | code) -->
+  <!-- 102 -->
+  <text x="596" y="118" font-size="12" fill="#7f848e" opacity="0.5">102</text>
+  <text x="650" y="118" font-size="12"><tspan fill="#c678dd">def </tspan><tspan fill="#61afef">_search_with_rg_stream</tspan><tspan fill="#d8dee9">(</tspan></text>
+  <!-- 103 -->
+  <text x="596" y="136" font-size="12" fill="#7f848e" opacity="0.5">103</text>
+  <text x="650" y="136" font-size="12" fill="#d8dee9">    engine_exec: <tspan fill="#61afef">str</tspan>,</text>
+  <!-- 104 -->
+  <text x="596" y="154" font-size="12" fill="#7f848e" opacity="0.5">104</text>
+  <text x="650" y="154" font-size="12" fill="#d8dee9">    options: <tspan fill="#61afef">SearchOptions</tspan>,</text>
+  <!-- 105 -->
+  <text x="596" y="172" font-size="12" fill="#7f848e" opacity="0.5">105</text>
+  <text x="650" y="172" font-size="12" fill="#d8dee9">    sort_mode: <tspan fill="#61afef">str</tspan> = <tspan fill="#98c379">"Matches desc"</tspan>,</text>
+  <!-- 106 -->
+  <text x="596" y="190" font-size="12" fill="#7f848e" opacity="0.5">106</text>
+  <text x="650" y="190" font-size="12" fill="#d8dee9">    emit_result=<tspan fill="#c678dd">None</tspan>,</text>
+  <!-- 107 -->
+  <text x="596" y="208" font-size="12" fill="#7f848e" opacity="0.5">107</text>
+  <text x="650" y="208" font-size="12" fill="#d8dee9">    stop_event=<tspan fill="#c678dd">None</tspan>,</text>
+  <!-- 108 -->
+  <text x="596" y="226" font-size="12" fill="#7f848e" opacity="0.5">108</text>
+  <text x="650" y="226" font-size="12" fill="#d8dee9">) -> <tspan fill="#61afef">list</tspan>[<tspan fill="#61afef">SearchFileResult</tspan>]:</text>
+
+  <!-- 110 — HIT (active match) -->
+  <rect x="580" y="232" width="620" height="20" fill="rgba(97,175,239,0.05)"/>
+  <text x="596" y="247" font-size="12" fill="#61afef" opacity="0.9">110</text>
+  <text x="650" y="247" font-size="12" fill="#d8dee9">    </text>
+  <rect x="672" y="233" width="102" height="16" rx="2" fill="#f6d365"/>
+  <text x="674" y="247" font-size="12" fill="#1a1300">grouped_results</text>
+  <text x="776" y="247" font-size="12" fill="#d8dee9">: <tspan fill="#61afef">dict</tspan>[<tspan fill="#61afef">str</tspan>, <tspan fill="#61afef">SearchFileResult</tspan>] = {}</text>
+
+  <!-- 111 -->
+  <text x="596" y="265" font-size="12" fill="#7f848e" opacity="0.5">111</text>
+  <text x="650" y="265" font-size="12" fill="#d8dee9">    match_count = <tspan fill="#d19a66">0</tspan></text>
+  <!-- 112 -->
+  <text x="596" y="283" font-size="12" fill="#7f848e" opacity="0.5">112</text>
+  <text x="650" y="283" font-size="12" fill="#d8dee9">    last_emit = <tspan fill="#d19a66">0.0</tspan></text>
+  <!-- 114 -->
+  <text x="596" y="301" font-size="12" fill="#7f848e" opacity="0.5">114</text>
+  <text x="650" y="301" font-size="12" fill="#d8dee9">    <tspan fill="#c678dd">for</tspan> root <tspan fill="#c678dd">in</tspan> options.folders:</text>
+  <!-- 115 -->
+  <text x="596" y="319" font-size="12" fill="#7f848e" opacity="0.5">115</text>
+  <text x="650" y="319" font-size="12" fill="#d8dee9">        process = _start_rg_process(engine_exec, options, root)</text>
+
+  <!-- 144 — HIT (normal match) -->
+  <rect x="580" y="324" width="620" height="20" fill="rgba(97,175,239,0.03)"/>
+  <text x="596" y="339" font-size="12" fill="#61afef" opacity="0.9">144</text>
+  <text x="650" y="339" font-size="12" fill="#d8dee9">                result = </text>
+  <rect x="770" y="325" width="102" height="16" rx="2" fill="rgba(246,211,101,0.35)"/>
+  <text x="772" y="339" font-size="12" fill="#d8dee9">grouped_results</text>
+  <text x="874" y="339" font-size="12" fill="#d8dee9">.get(key)</text>
+
+  <!-- 145 -->
+  <text x="596" y="357" font-size="12" fill="#7f848e" opacity="0.5">145</text>
+  <text x="650" y="357" font-size="12" fill="#d8dee9">                <tspan fill="#c678dd">if</tspan> result <tspan fill="#c678dd">is</tspan> <tspan fill="#c678dd">None</tspan>:</text>
+
+  <!-- 152 — HIT (normal match) -->
+  <rect x="580" y="362" width="620" height="20" fill="rgba(97,175,239,0.03)"/>
+  <text x="596" y="377" font-size="12" fill="#61afef" opacity="0.9">152</text>
+  <text x="650" y="377" font-size="12" fill="#d8dee9">                    </text>
+  <rect x="698" y="363" width="102" height="16" rx="2" fill="rgba(246,211,101,0.35)"/>
+  <text x="700" y="377" font-size="12" fill="#d8dee9">grouped_results</text>
+  <text x="802" y="377" font-size="12" fill="#d8dee9">[key] = result</text>
+
+  <!-- 163 -->
+  <text x="596" y="395" font-size="12" fill="#7f848e" opacity="0.5">163</text>
+  <text x="650" y="395" font-size="12" fill="#d8dee9">                    emit_result(_clone_results(</text>
+  <rect x="882" y="381" width="102" height="16" rx="2" fill="rgba(246,211,101,0.35)"/>
+  <text x="884" y="395" font-size="12" fill="#d8dee9">grouped_results</text>
+  <text x="986" y="395" font-size="12" fill="#d8dee9">…)</text>
+
+  <!-- 179 -->
+  <text x="596" y="413" font-size="12" fill="#7f848e" opacity="0.5">179</text>
+  <text x="650" y="413" font-size="12" fill="#d8dee9">    <tspan fill="#c678dd">return</tspan> _sorted_results(</text>
+  <rect x="792" y="399" width="102" height="16" rx="2" fill="rgba(246,211,101,0.35)"/>
+  <text x="794" y="413" font-size="12" fill="#d8dee9">grouped_results</text>
+  <text x="896" y="413" font-size="12" fill="#d8dee9">.values(), sort_mode)</text>
+
+  <!-- ── Status bar ── -->
+  <rect x="0" y="640" width="1200" height="40" fill="#21252b"/>
+  <line x1="0" y1="640" x2="1200" y2="640" stroke="#3b4048" stroke-width="1"/>
+  <circle cx="18" cy="660" r="3" fill="#98c379"/>
+  <text x="28" y="664" font-size="11" fill="#98c379">完成，共 12 個檔案有命中</text>
+  <text x="210" y="664" font-family="'Segoe UI',system-ui,sans-serif" font-size="11" fill="#7f848e"> · 找到 38 筆結果</text>
+  <circle cx="1100" cy="660" r="3" fill="#61afef"/>
+  <text x="1110" y="664" font-size="11" fill="#61afef">ripgrep 14.1.0</text>
+</svg>

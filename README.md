@@ -30,6 +30,12 @@ Quick links:
 - [Traditional Chinese guide](docs/zh-TW/README.md)
 - [Traditional Chinese user manual](docs/zh-TW/usage-guide.md)
 
+## Preview
+
+![UI design preview](docs/assets/preview.svg)
+
+*Obsidian-themed three-panel layout: search sidebar on the left, matched files in the middle, and syntax-highlighted code preview on the right.*
+
 ## Screenshots
 
 ![Search results view](docs/assets/search-result.png)
@@ -175,8 +181,7 @@ If you later want a broader non-technical audience, add a GitHub Release with a 
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
-This means people can use, modify, and redistribute the project, but they must keep the license notice.
+[PolyForm Noncommercial 1.0.0](LICENSE) — 個人使用、研究、教育用途免費；**禁止商業使用**。
 
 ## Contributing
 
