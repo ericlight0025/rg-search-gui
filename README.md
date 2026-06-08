@@ -175,8 +175,7 @@ If you later want a broader non-technical audience, add a GitHub Release with a 
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
-This means people can use, modify, and redistribute the project, but they must keep the license notice.
+[PolyForm Noncommercial 1.0.0](LICENSE) — 個人使用、研究、教育用途免費；**禁止商業使用**。
 
 ## Contributing
 
