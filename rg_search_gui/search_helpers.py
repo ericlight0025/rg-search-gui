@@ -11,6 +11,33 @@ from pathlib import Path
 from rg_search_gui.models import ContextLine, SearchFileResult, SearchHit
 from rg_search_gui.privacy_helpers import display_root_label
 
+_PY_KEYWORD_RE = re.compile(
+    r"\b(" + "|".join(re.escape(w) for w in keyword.kwlist) + r")\b"
+)
+
+_C_LIKE_KEYWORDS = frozenset({
+    "abstract", "async", "await", "bool", "boolean", "break", "byte", "case", "catch", "char",
+    "class", "const", "continue", "decimal", "default", "do", "double", "else", "enum", "extends",
+    "false", "final", "finally", "float", "for", "function", "if", "implements", "import", "int",
+    "interface", "let", "long", "namespace", "native", "new", "null", "package", "private",
+    "protected", "public", "record", "return", "short", "static", "string", "super", "switch",
+    "this", "throw", "throws", "true", "try", "using", "var", "void", "while",
+})
+_C_LIKE_KEYWORD_RE = re.compile(
+    r"\b(" + "|".join(re.escape(w) for w in sorted(_C_LIKE_KEYWORDS)) + r")\b"
+)
+
+_SQL_KEYWORDS = frozenset({
+    "all", "alter", "and", "as", "begin", "by", "case", "commit", "create", "delete", "distinct",
+    "drop", "else", "end", "from", "group", "having", "index", "inner", "insert", "into", "is",
+    "join", "left", "not", "null", "on", "or", "order", "outer", "right", "rollback", "select",
+    "set", "table", "then", "top", "union", "update", "view", "when", "where",
+})
+_SQL_KEYWORD_RE = re.compile(
+    r"\b(" + "|".join(re.escape(w) for w in sorted(_SQL_KEYWORDS)) + r")\b",
+    re.IGNORECASE,
+)
+
 
 def _split_patterns(raw_text: str) -> list[str]:
     normalized = raw_text.replace("\n", ";").replace(",", ";")
@@ -81,9 +108,10 @@ def _unique_result_roots(results: list[SearchFileResult]) -> set[Path]:
 
 
 def _display_file_name(result: SearchFileResult, include_root: bool) -> str:
+    name = Path(result.relative_path).name
     if include_root:
-        return f"{display_root_label(result.source_folder)} / {result.full_path.name}"
-    return result.full_path.name
+        return f"{display_root_label(result.source_folder)} / {name}"
+    return name
 
 
 def _build_context_lines(result: SearchFileResult, display_lines: int) -> list[ContextLine]:
@@ -156,8 +184,7 @@ def _find_syntax_spans(content: str, suffix: str) -> list[tuple[str, int, int]]:
             spans.append(("syntax_string", match.start(), match.end()))
         for match in re.finditer(r"\b\d+(?:\.\d+)?\b", content):
             spans.append(("syntax_number", match.start(), match.end()))
-        keyword_pattern = r"\b(" + "|".join(re.escape(word) for word in keyword.kwlist) + r")\b"
-        for match in re.finditer(keyword_pattern, content):
+        for match in _PY_KEYWORD_RE.finditer(content):
             spans.append(("syntax_keyword", match.start(), match.end()))
         return spans
 
@@ -169,16 +196,7 @@ def _find_syntax_spans(content: str, suffix: str) -> list[tuple[str, int, int]]:
             spans.append(("syntax_string", match.start(), match.end()))
         for match in re.finditer(r"\b\d+(?:\.\d+)?\b", content):
             spans.append(("syntax_number", match.start(), match.end()))
-        c_like_keywords = {
-            "abstract", "boolean", "break", "byte", "case", "catch", "char", "class", "const", "continue",
-            "default", "do", "double", "else", "enum", "extends", "false", "final", "finally", "float",
-            "for", "if", "implements", "import", "int", "interface", "long", "native", "new", "null",
-            "package", "private", "protected", "public", "return", "short", "static", "super", "switch",
-            "this", "throw", "throws", "true", "try", "void", "while", "var", "let", "function", "async",
-            "await", "using", "namespace", "string", "decimal", "bool", "record",
-        }
-        keyword_pattern = r"\b(" + "|".join(re.escape(word) for word in sorted(c_like_keywords)) + r")\b"
-        for match in re.finditer(keyword_pattern, content):
+        for match in _C_LIKE_KEYWORD_RE.finditer(content):
             spans.append(("syntax_keyword", match.start(), match.end()))
         for match in re.finditer(r"\b[A-Z][A-Za-z0-9_]*\b", content):
             spans.append(("syntax_type", match.start(), match.end()))
@@ -192,14 +210,7 @@ def _find_syntax_spans(content: str, suffix: str) -> list[tuple[str, int, int]]:
             spans.append(("syntax_string", match.start(), match.end()))
         for match in re.finditer(r"\b\d+(?:\.\d+)?\b", content):
             spans.append(("syntax_number", match.start(), match.end()))
-        sql_keywords = {
-            "select", "from", "where", "join", "left", "right", "inner", "outer", "on", "and", "or",
-            "insert", "into", "update", "delete", "create", "alter", "drop", "table", "view", "index",
-            "group", "by", "order", "having", "distinct", "case", "when", "then", "else", "end",
-            "union", "all", "null", "is", "not", "as", "top", "set", "begin", "commit", "rollback",
-        }
-        keyword_pattern = r"\b(" + "|".join(re.escape(word) for word in sorted(sql_keywords)) + r")\b"
-        for match in re.finditer(keyword_pattern, content, re.IGNORECASE):
+        for match in _SQL_KEYWORD_RE.finditer(content):
             spans.append(("syntax_keyword", match.start(), match.end()))
         return spans
 
