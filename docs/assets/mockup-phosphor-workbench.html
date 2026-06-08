@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phosphor Workbench — Mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #0c0d0e;
+    --surface:   #141618;
+    --surface-2: #1b1e21;
+    --border:    #2a2e33;
+    --text:      #d7dbdf;
+    --text-dim:  #7d858c;
+    --accent:    #ffb000;
+    --accent-dim:#9c6c00;
+    --match:     #ffd866;
+    --match-fg:  #1a1300;
+    --ok:        #5ec27e;
+    --warn:      #e0813d;
+    --danger:    #e0556b;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', system-ui, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 13px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ── Top Header ── */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 18px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .header-brand {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .brand-diamond {
+    width: 10px; height: 10px;
+    background: var(--accent);
+    transform: rotate(45deg);
+    flex-shrink: 0;
+    box-shadow: 0 0 8px var(--accent);
+  }
+  .header-spacer { flex: 1; }
+  .engine-badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    padding: 3px 10px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .engine-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--ok);
+    box-shadow: 0 0 5px var(--ok);
+  }
+  .scan-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+  .scan-bar-container {
+    width: 80px;
+    height: 4px;
+    background: var(--surface-2);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .scan-bar {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    animation: phosphor-scan 1.6s ease-in-out infinite;
+    box-shadow: 0 0 8px var(--accent);
+  }
+  @keyframes phosphor-scan {
+    0%   { width: 0%; margin-left: 0%; }
+    50%  { width: 60%; margin-left: 20%; }
+    100% { width: 0%; margin-left: 100%; }
+  }
+
+  /* ── Scan line across top of header ── */
+  .header-scan-line {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, var(--accent) 50%, transparent 100%);
+    animation: header-sweep 2s ease-in-out infinite;
+    opacity: 0.6;
+  }
+  @keyframes header-sweep {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  /* ── Main layout ── */
+  .workspace {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: 280px;
+    flex-shrink: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .sidebar-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .tab {
+    padding: 10px 18px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-dim);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s;
+    letter-spacing: 0.03em;
+  }
+  .tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .sidebar-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .sidebar-body::-webkit-scrollbar { width: 4px; }
+  .sidebar-body::-webkit-scrollbar-track { background: transparent; }
+  .sidebar-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .field-group { display: flex; flex-direction: column; gap: 5px; }
+  .field-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .field-input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 7px 10px;
+    border-radius: 3px;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    width: 100%;
+  }
+  .field-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(255,176,0,0.12);
+  }
+  .field-input::placeholder { color: var(--text-dim); }
+
+  .toggles-row {
+    display: flex;
+    gap: 8px;
+  }
+  .toggle-chip {
+    flex: 1;
+    padding: 5px 0;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 500;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.02em;
+  }
+  .toggle-chip.on {
+    background: rgba(255,176,0,0.1);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .folder-list {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .folder-item {
+    padding: 6px 10px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .folder-item:last-child { border-bottom: none; }
+  .folder-item.active { color: var(--text); background: var(--surface-2); }
+  .folder-icon { color: var(--accent); font-size: 10px; }
+
+  .folder-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+  }
+  .btn {
+    padding: 6px 10px;
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+  }
+  .btn:hover { border-color: var(--text-dim); color: #fff; }
+  .btn-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #1a1300;
+    font-weight: 600;
+    grid-column: span 2;
+    padding: 8px;
+    font-size: 13px;
+  }
+  .btn-primary:hover { background: #ffc333; box-shadow: 0 0 12px rgba(255,176,0,0.3); }
+  .btn-danger { border-color: var(--danger); color: var(--danger); }
+  .btn-danger:hover { background: rgba(224,85,107,0.1); }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 2px 0;
+  }
+
+  /* ── Results panel ── */
+  .results-panel {
+    width: 300px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .panel-header {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .panel-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .file-count {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+  }
+  .filter-row {
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .filter-input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 5px 8px;
+    border-radius: 3px;
+    outline: none;
+  }
+  .filter-input:focus { border-color: var(--accent); }
+  .filter-input::placeholder { color: var(--text-dim); }
+  .filter-select {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 11px;
+    padding: 5px 6px;
+    border-radius: 3px;
+    outline: none;
+  }
+  .file-list { flex: 1; overflow-y: auto; }
+  .file-list::-webkit-scrollbar { width: 4px; }
+  .file-list::-webkit-scrollbar-track { background: transparent; }
+  .file-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .file-row {
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(42,46,51,0.6);
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .file-row:hover { background: var(--surface-2); }
+  .file-row.selected {
+    background: rgba(255,176,0,0.08);
+    border-left: 2px solid var(--accent);
+    padding-left: 12px;
+  }
+  .file-row-left { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .file-name {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .file-row.selected .file-name { color: var(--accent); }
+  .file-path {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .hit-badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--match-fg);
+    background: var(--match);
+    padding: 1px 7px;
+    border-radius: 10px;
+    flex-shrink: 0;
+    margin-left: 8px;
+  }
+  .hit-badge.large { background: var(--accent); }
+
+  /* ── Preview panel ── */
+  .preview-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .preview-header {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .preview-file-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .preview-filename {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text);
+    font-weight: 500;
+  }
+  .preview-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+  }
+  .preview-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .icon-btn {
+    padding: 5px 10px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 12px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: var(--sans);
+  }
+  .icon-btn:hover { color: var(--text); border-color: var(--text-dim); }
+
+  .code-area {
+    flex: 1;
+    overflow: auto;
+    padding: 10px 0;
+    background: var(--bg);
+  }
+  .code-area::-webkit-scrollbar { width: 6px; height: 6px; }
+  .code-area::-webkit-scrollbar-track { background: transparent; }
+  .code-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  .code-line {
+    display: flex;
+    align-items: baseline;
+    padding: 1px 0;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.7;
+    transition: background 0.15s;
+  }
+  .code-line:hover { background: rgba(255,255,255,0.02); }
+  .code-line.hit-line { background: rgba(255,216,102,0.04); }
+  .code-line.active-hit { background: rgba(255,176,0,0.08); }
+  .line-num {
+    width: 48px;
+    text-align: right;
+    padding-right: 16px;
+    color: var(--text-dim);
+    font-size: 11px;
+    flex-shrink: 0;
+    user-select: none;
+    opacity: 0.5;
+  }
+  .line-num.hit { color: var(--accent); opacity: 0.8; }
+  .code-sep {
+    width: 1px;
+    background: var(--border);
+    margin-right: 16px;
+    align-self: stretch;
+    flex-shrink: 0;
+    opacity: 0.5;
+  }
+  .code-content { color: var(--text); white-space: pre; }
+  .kw { color: #c9a3f7; }
+  .str { color: #87c672; }
+  .cmt { color: var(--text-dim); font-style: italic; }
+  .num { color: #e5a261; }
+  .type { color: #7eb8f5; }
+  .fn { color: #7eb8f5; }
+
+  mark.hit {
+    background: var(--match);
+    color: var(--match-fg);
+    border-radius: 2px;
+    padding: 0 1px;
+  }
+  mark.active-hit {
+    background: var(--accent);
+    color: var(--match-fg);
+    border-radius: 2px;
+    padding: 0 1px;
+    box-shadow: 0 0 8px rgba(255,176,0,0.5);
+    animation: pulse-hit 0.4s ease-out;
+  }
+  @keyframes pulse-hit {
+    0%   { box-shadow: 0 0 0 0 rgba(255,176,0,0.7); }
+    100% { box-shadow: 0 0 12px 4px rgba(255,176,0,0); }
+  }
+
+  /* ── Status bar ── */
+  .statusbar {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 6px 18px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+  .status-item {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .status-item.ok { color: var(--ok); }
+  .status-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  .status-spacer { flex: 1; }
+  .status-item.accent { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-brand">
+    <div class="brand-diamond"></div>
+    PHOSPHOR WORKBENCH
+  </div>
+  <div class="header-spacer"></div>
+  <div class="engine-badge">
+    <div class="engine-dot"></div>
+    ripgrep 14.1.0
+  </div>
+  <div class="scan-wrap">
+    掃描中
+    <div class="scan-bar-container"><div class="scan-bar"></div></div>
+  </div>
+  <div class="header-scan-line"></div>
+</header>
+
+<!-- Workspace -->
+<div class="workspace">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-tabs">
+      <div class="tab active">搜尋</div>
+      <div class="tab">設定</div>
+    </div>
+    <div class="sidebar-body">
+
+      <div class="field-group">
+        <div class="field-label">搜尋文字</div>
+        <input class="field-input" type="text" value="grouped_results" placeholder="輸入關鍵字或正規表示式…">
+      </div>
+
+      <div class="toggles-row">
+        <div class="toggle-chip">Aa 大小寫</div>
+        <div class="toggle-chip on">·* 正規式</div>
+        <div class="toggle-chip on">↳ 遞迴</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="field-group">
+        <div class="field-label">搜尋範圍</div>
+        <div class="folder-list">
+          <div class="folder-item active"><span class="folder-icon">▸</span> ~/Projects/rg-search-gui</div>
+          <div class="folder-item"><span class="folder-icon">▸</span> ~/Documents/notes</div>
+        </div>
+      </div>
+
+      <div class="folder-actions">
+        <div class="btn">+ 新增資料夾</div>
+        <div class="btn">+ 目前目錄</div>
+        <div class="btn">↑ 上移</div>
+        <div class="btn">↓ 下移</div>
+        <div class="btn btn-danger">移除</div>
+        <div class="btn">全部清空</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="field-group">
+        <div class="field-label">包含檔案</div>
+        <input class="field-input" type="text" value="*.*" placeholder="例：*.py;*.ts">
+      </div>
+      <div class="field-group">
+        <div class="field-label">排除路徑</div>
+        <input class="field-input" type="text" value=".git;node_modules;__pycache__" placeholder="例：.git;dist">
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="btn btn-primary">▶ 開始搜尋</div>
+      <div class="btn btn-danger" style="grid-column:span 2">◼ 取消搜尋</div>
+
+    </div>
+  </aside>
+
+  <!-- Results panel -->
+  <div class="results-panel">
+    <div class="panel-header">
+      <div class="panel-title">結果</div>
+      <div class="file-count">12 / 40 檔案</div>
+    </div>
+    <div class="filter-row">
+      <input class="filter-input" type="text" placeholder="篩選檔名…">
+      <select class="filter-select"><option>All</option></select>
+    </div>
+    <div class="file-list">
+      <div class="file-row selected">
+        <div class="file-row-left">
+          <div class="file-name">search_service.py</div>
+          <div class="file-path">rg_search_gui /</div>
+        </div>
+        <div class="hit-badge large">23</div>
+      </div>
+      <div class="file-row">
+        <div class="file-row-left">
+          <div class="file-name">ui.py</div>
+          <div class="file-path">rg_search_gui /</div>
+        </div>
+        <div class="hit-badge">8</div>
+      </div>
+      <div class="file-row">
+        <div class="file-row-left">
+          <div class="file-name">search_helpers.py</div>
+          <div class="file-path">rg_search_gui /</div>
+        </div>
+        <div class="hit-badge">5</div>
+      </div>
+      <div class="file-row">
+        <div class="file-row-left">
+          <div class="file-name">models.py</div>
+          <div class="file-path">rg_search_gui /</div>
+        </div>
+        <div class="hit-badge">2</div>
+      </div>
+      <div class="file-row">
+        <div class="file-row-left">
+          <div class="file-name">test_privacy_redaction.py</div>
+          <div class="file-path">tests /</div>
+        </div>
+        <div class="hit-badge">1</div>
+      </div>
+      <div class="file-row">
+        <div class="file-row-left">
+          <div class="file-name">engine_detection.py</div>
+          <div class="file-path">rg_search_gui /</div>
+        </div>
+        <div class="hit-badge">1</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preview panel -->
+  <div class="preview-panel">
+    <div class="preview-header">
+      <div class="preview-file-info">
+        <div class="preview-filename">search_service.py</div>
+        <div class="preview-meta">rg_search_gui / · 命中 23 筆 · 顯示 42 行</div>
+      </div>
+      <div class="preview-actions">
+        <div class="icon-btn">↑ 上一筆</div>
+        <div class="icon-btn">↓ 下一筆</div>
+        <div class="icon-btn">⬡ 開啟檔案</div>
+      </div>
+    </div>
+    <div class="code-area">
+
+      <div class="code-line"><span class="line-num">102</span><div class="code-sep"></div><span class="code-content"><span class="kw">def</span> <span class="fn">_search_with_rg_stream</span>(</span></div>
+      <div class="code-line"><span class="line-num">103</span><div class="code-sep"></div><span class="code-content">    engine_exec: <span class="type">str</span>,</span></div>
+      <div class="code-line"><span class="line-num">104</span><div class="code-sep"></div><span class="code-content">    options: <span class="type">SearchOptions</span>,</span></div>
+      <div class="code-line"><span class="line-num">105</span><div class="code-sep"></div><span class="code-content">    sort_mode: <span class="type">str</span> = <span class="str">"Matches desc"</span>,</span></div>
+      <div class="code-line"><span class="line-num">106</span><div class="code-sep"></div><span class="code-content">    emit_result=<span class="kw">None</span>,</span></div>
+      <div class="code-line"><span class="line-num">107</span><div class="code-sep"></div><span class="code-content">    stop_event=<span class="kw">None</span>,</span></div>
+      <div class="code-line"><span class="line-num">108</span><div class="code-sep"></div><span class="code-content">) -> <span class="type">list</span>[<span class="type">SearchFileResult</span>]:</span></div>
+      <div class="code-line hit-line"><span class="line-num hit">110</span><div class="code-sep"></div><span class="code-content">    <mark class="active-hit">grouped_results</mark>: <span class="type">dict</span>[<span class="type">str</span>, <span class="type">SearchFileResult</span>] = {}</span></div>
+      <div class="code-line"><span class="line-num">111</span><div class="code-sep"></div><span class="code-content">    match_count = <span class="num">0</span></span></div>
+      <div class="code-line"><span class="line-num">112</span><div class="code-sep"></div><span class="code-content">    last_emit = <span class="num">0.0</span></span></div>
+      <div class="code-line"><span class="line-num">113</span><div class="code-sep"></div><span class="code-content"></span></div>
+      <div class="code-line"><span class="line-num">114</span><div class="code-sep"></div><span class="code-content">    <span class="kw">for</span> root <span class="kw">in</span> options.folders:</span></div>
+      <div class="code-line"><span class="line-num">115</span><div class="code-sep"></div><span class="code-content">        process = _start_rg_process(engine_exec, options, root)</span></div>
+      <div class="code-line"><span class="line-num">120</span><div class="code-sep"></div><span class="code-content">        <span class="kw">try</span>:</span></div>
+      <div class="code-line"><span class="line-num">121</span><div class="code-sep"></div><span class="code-content">            <span class="kw">for</span> raw_line <span class="kw">in</span> iter(process.stdout.readline, <span class="str">""</span>):</span></div>
+      <div class="code-line"><span class="line-num">130</span><div class="code-sep"></div><span class="code-content">                <span class="kw">try</span>:</span></div>
+      <div class="code-line"><span class="line-num">131</span><div class="code-sep"></div><span class="code-content">                    payload = json.loads(raw_line)</span></div>
+      <div class="code-line"><span class="line-num">132</span><div class="code-sep"></div><span class="code-content">                <span class="kw">except</span> json.<span class="type">JSONDecodeError</span>:</span></div>
+      <div class="code-line"><span class="line-num">133</span><div class="code-sep"></div><span class="code-content">                    <span class="kw">continue</span></span></div>
+      <div class="code-line"><span class="line-num">143</span><div class="code-sep"></div><span class="code-content">                key = <span class="type">str</span>(full_path)</span></div>
+      <div class="code-line hit-line"><span class="line-num hit">144</span><div class="code-sep"></div><span class="code-content">                result = <mark class="hit">grouped_results</mark>.get(key)</span></div>
+      <div class="code-line"><span class="line-num">145</span><div class="code-sep"></div><span class="code-content">                <span class="kw">if</span> result <span class="kw">is</span> <span class="kw">None</span>:</span></div>
+      <div class="code-line"><span class="line-num">146</span><div class="code-sep"></div><span class="code-content">                    result = <span class="type">SearchFileResult</span>(</span></div>
+      <div class="code-line hit-line"><span class="line-num hit">152</span><div class="code-sep"></div><span class="code-content">                    <mark class="hit">grouped_results</mark>[key] = result</span></div>
+      <div class="code-line"><span class="line-num">155</span><div class="code-sep"></div><span class="code-content">                result.hits.append(<span class="type">SearchHit</span>(</span></div>
+      <div class="code-line"><span class="line-num">160</span><div class="code-sep"></div><span class="code-content">                match_count += <span class="num">1</span></span></div>
+      <div class="code-line"><span class="line-num">162</span><div class="code-sep"></div><span class="code-content">                <span class="kw">if</span> emit_result <span class="kw">and</span> now - last_emit >= <span class="num">0.15</span>:</span></div>
+      <div class="code-line hit-line"><span class="line-num hit">163</span><div class="code-sep"></div><span class="code-content">                    emit_result(_clone_results(<mark class="hit">grouped_results</mark>.values()), …)</span></div>
+      <div class="code-line"><span class="line-num">171</span><div class="code-sep"></div><span class="code-content">        <span class="cmt"># process_callback(None) — 搜尋完成後清除 active process</span></span></div>
+      <div class="code-line hit-line"><span class="line-num hit">179</span><div class="code-sep"></div><span class="code-content">    <span class="kw">return</span> _sorted_results(<mark class="hit">grouped_results</mark>.values(), sort_mode)</span></div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- Status bar -->
+<div class="statusbar">
+  <div class="status-item ok">
+    <div class="status-dot"></div>
+    完成，共 12 個檔案有命中
+  </div>
+  <div class="status-item">找到 38 筆結果</div>
+  <div class="status-spacer"></div>
+  <div class="status-item">副檔名 .py</div>
+  <div class="status-item accent">
+    <div class="status-dot"></div>
+    ripgrep 14.1.0
+  </div>
+</div>
+
+</body>
+</html>
