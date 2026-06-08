@@ -534,7 +534,120 @@
   }
   .status-spacer { flex: 1; }
   .status-item.accent { color: var(--accent); }
+
+  /* ── Settings panel ── */
+  .settings-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .settings-card + .settings-card { margin-top: 10px; }
+  .settings-card-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .check-row {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .check-label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    color: var(--text);
+    cursor: pointer;
+    user-select: none;
+  }
+  .check-label input[type=checkbox] {
+    appearance: none;
+    width: 14px; height: 14px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background: var(--bg);
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .check-label input[type=checkbox]:checked {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .check-label input[type=checkbox]:checked::after {
+    content: '';
+    position: absolute;
+    left: 3px; top: 1px;
+    width: 6px; height: 9px;
+    border: 2px solid #1b1e24;
+    border-top: none; border-left: none;
+    transform: rotate(40deg);
+  }
+  .settings-grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .s-select {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 6px 8px;
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+    margin-top: 5px;
+  }
+  .s-select:focus { border-color: var(--accent); }
+  .settings-diag { flex: 1; }
+  .diag-note {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+  .diag-block {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 10px 12px;
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.9;
+    white-space: pre;
+  }
+  .diag-key { color: var(--text-dim); }
+  .diag-val { color: var(--ok); }
+  .diag-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
 </style>
+
+<script>
+function switchTab(name, el) {
+  document.querySelectorAll('.sidebar-body').forEach(p => p.style.display = 'none');
+  document.getElementById('panel-' + name).style.display = 'flex';
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  if (el) { el.classList.add('active'); }
+  else {
+    const tabs = document.querySelectorAll('.tab');
+    if (name === 'search') tabs[0].classList.add('active');
+  }
+}
+</script>
 </head>
 <body>
 
@@ -562,10 +675,12 @@
   <!-- Sidebar -->
   <aside class="sidebar">
     <div class="sidebar-tabs">
-      <div class="tab active">搜尋</div>
-      <div class="tab">設定</div>
+      <div class="tab active" onclick="switchTab('search',this)">搜尋</div>
+      <div class="tab" onclick="switchTab('settings',this)">設定</div>
     </div>
-    <div class="sidebar-body">
+
+    <!-- 搜尋分頁 -->
+    <div id="panel-search" class="sidebar-body">
 
       <div class="field-group">
         <div class="field-label">搜尋文字</div>
@@ -611,7 +726,108 @@
       <div class="divider"></div>
 
       <div class="btn btn-primary">▶ 開始搜尋</div>
-      <div class="btn btn-danger" style="grid-column:span 2">◼ 取消搜尋</div>
+      <div class="btn btn-danger">◼ 取消搜尋</div>
+
+    </div>
+
+    <!-- 設定分頁 -->
+    <div id="panel-settings" class="sidebar-body" style="display:none">
+
+      <div class="settings-card">
+        <div class="settings-card-title">搜尋設定</div>
+
+        <div class="check-row">
+          <label class="check-label"><input type="checkbox" checked> 遞迴搜尋</label>
+          <label class="check-label"><input type="checkbox"> 大小寫敏感</label>
+        </div>
+        <div class="check-row">
+          <label class="check-label"><input type="checkbox" checked> 使用正規表示式</label>
+        </div>
+
+        <div class="settings-grid2">
+          <div class="field-group">
+            <div class="field-label">檔案編碼</div>
+            <select class="s-select">
+              <option selected>Auto</option>
+              <option>utf-8</option>
+              <option>cp950</option>
+              <option>big5</option>
+              <option>utf-16</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <div class="field-label">最大檔案大小 (MB)</div>
+            <select class="s-select">
+              <option>1</option>
+              <option>5</option>
+              <option selected>10</option>
+              <option>20</option>
+              <option>50</option>
+              <option>100</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <div class="settings-card-title">預覽設定</div>
+
+        <div class="settings-grid2">
+          <div class="field-group">
+            <div class="field-label">顯示行數</div>
+            <select class="s-select">
+              <option>1</option>
+              <option>3</option>
+              <option>5</option>
+              <option selected>7</option>
+              <option>9</option>
+              <option>11</option>
+              <option>15</option>
+              <option>21</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <div class="field-label">字體大小</div>
+            <select class="s-select">
+              <option>9</option>
+              <option>10</option>
+              <option selected>11</option>
+              <option>12</option>
+              <option>14</option>
+              <option>16</option>
+              <option>18</option>
+              <option>20</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-group" style="margin-top:10px">
+          <div class="field-label">程式碼主題</div>
+          <select class="s-select">
+            <option selected>Obsidian</option>
+            <option>Monokai</option>
+            <option>Light</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="settings-card settings-diag">
+        <div class="settings-card-title">診斷資訊</div>
+        <div class="diag-note">這裡只顯示狀態資訊，不更動搜尋邏輯。</div>
+        <div class="diag-block">
+<span class="diag-key">App Version</span>  <span class="diag-val">0.1.0</span>
+<span class="diag-key">Engine     </span>  <span class="diag-val">ripgrep</span>
+<span class="diag-key">Executable </span>  <span class="diag-val">~/.local/bin/rg</span>
+<span class="diag-key">Version    </span>  <span class="diag-val">14.1.0</span>
+<span class="diag-key">Settings   </span>  <span class="diag-val">~/.rg-search-gui/settings.json</span>
+<span class="diag-key">Folders    </span>  <span class="diag-val">2</span>
+<span class="diag-key">Code Theme </span>  <span class="diag-val">Obsidian</span>
+        </div>
+        <div class="diag-actions">
+          <div class="btn" onclick="switchTab('search',null)">← 回到搜尋</div>
+          <div class="btn" style="border-color:var(--warn);color:var(--warn)">安裝 rg</div>
+        </div>
+      </div>
 
     </div>
   </aside>
