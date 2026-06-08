@@ -65,8 +65,8 @@ OBSIDIAN_TYPE = "#61afef"
 MATCH_BG = "#f6d365"
 MATCH_FG = "#000000"
 TEXT_EDITOR_SUFFIXES = {
-    ".cfg", ".conf", ".csv", ".env", ".ini", ".java", ".js", ".json", ".jsx", ".log", ".md", ".py", ".pyi",
-    ".pyw", ".sql", ".text", ".toml", ".ts", ".tsx", ".txt", ".xml", ".yaml", ".yml",
+    ".cfg", ".conf", ".csv", ".env", ".ini", ".java", ".js", ".json", ".jsx", ".log", ".md", ".pyi",
+    ".sql", ".text", ".toml", ".ts", ".tsx", ".txt", ".xml", ".yaml", ".yml",
 }
 DANGEROUS_OPEN_SUFFIXES = {
     ".appref-ms", ".bat", ".cmd", ".com", ".cpl", ".exe", ".hta", ".ins", ".isp", ".jse", ".lnk",
@@ -75,6 +75,7 @@ DANGEROUS_OPEN_SUFFIXES = {
 }
 
 DEFAULT_PREVIEW_THEME = "Obsidian"
+_FILE_CACHE_MAX_SIZE = 64
 PREVIEW_THEMES: dict[str, dict[str, str]] = {
     "Obsidian": {
         "bg": OBSIDIAN_PREVIEW_BG,
@@ -1207,10 +1208,10 @@ class RgSearchApp(tk.Tk):
             self.folder_listbox.selection_clear(0, "end")
             self.folder_listbox.selection_set(nearest)
         menu = _create_dark_menu(self)
-        menu.add_command(label="Move Up", command=self._move_selected_folder_up)
-        menu.add_command(label="Move Down", command=self._move_selected_folder_down)
+        menu.add_command(label="上移", command=self._move_selected_folder_up)
+        menu.add_command(label="下移", command=self._move_selected_folder_down)
         menu.add_separator()
-        menu.add_command(label="Remove", command=self._remove_selected_folders)
+        menu.add_command(label="移除", command=self._remove_selected_folders)
         menu.tk_popup(event.x_root, event.y_root)
 
     def _clear_folders(self) -> None:
@@ -1440,24 +1441,6 @@ class RgSearchApp(tk.Tk):
         if hasattr(self, "line_preview"):
             self.line_preview.configure(font=self._preview_font)
 
-    def _search_with_rg_stream(self, engine_exec: str, options: SearchOptions) -> list[SearchFileResult]:
-        return service_search_with_rg_stream(
-            engine_exec,
-            options,
-            sort_mode=self.sort_var.get(),
-            emit_result=self._schedule_stream_results,
-            stop_event=self._stop_event,
-            process_callback=lambda process: setattr(self, "_active_process", process),
-        )
-
-    def _search_with_grep_fallback_stream(self, options: SearchOptions) -> list[SearchFileResult]:
-        return service_search_with_grep_fallback_stream(
-            options,
-            sort_mode=self.sort_var.get(),
-            emit_result=self._schedule_stream_results,
-            stop_event=self._stop_event,
-        )
-
     def _schedule_stream_results(self, results: list[SearchFileResult], total_hits: int, current_item: str) -> None:
         self._queue_ui_action("stream_results", results, total_hits, current_item)
 
@@ -1611,7 +1594,7 @@ class RgSearchApp(tk.Tk):
 
         self._cached_file_lines[key] = (stamp[0], stamp[1], lines)
         self._cached_file_lines.move_to_end(key)
-        while len(self._cached_file_lines) > 64:
+        while len(self._cached_file_lines) > _FILE_CACHE_MAX_SIZE:
             self._cached_file_lines.popitem(last=False)
         return lines
 
@@ -1676,10 +1659,6 @@ class RgSearchApp(tk.Tk):
 def launch_app() -> None:
     app = RgSearchApp()
     app.mainloop()
-
-
-
-
 
 
 
