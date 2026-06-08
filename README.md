@@ -30,6 +30,12 @@ Quick links:
 - [Traditional Chinese guide](docs/zh-TW/README.md)
 - [Traditional Chinese user manual](docs/zh-TW/usage-guide.md)
 
+## Preview
+
+![UI design preview](docs/assets/preview.svg)
+
+*Obsidian-themed three-panel layout: search sidebar on the left, matched files in the middle, and syntax-highlighted code preview on the right.*
+
 ## Screenshots
 
 ![Search results view](docs/assets/search-result.png)
