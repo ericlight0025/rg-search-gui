@@ -36,19 +36,6 @@ Quick links:
 
 *Obsidian-themed three-panel layout: search sidebar on the left, matched files in the middle, and syntax-highlighted code preview on the right.*
 
-## Screenshots
-
-![Search results view](docs/assets/search-result.png)
-
-*Use a VS Code-style workspace layout: search on the left, matched files on the upper right, and preview on the lower right.*
-
-![Settings menu](docs/assets/settings-menu.png)
-
-*The `設定` entry can still jump to diagnostics or the install flow, while the main configuration now lives in the left sidebar tabs.*
-
-![Advanced Settings panel](docs/assets/search-settings-dialog.png)
-
-*Switch between `搜尋` and `設定` in the left sidebar without leaving the current results view.*
 
 ## Why It Exists
 
