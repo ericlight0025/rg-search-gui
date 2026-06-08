@@ -3,23 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Phosphor Workbench — Mockup</title>
+<title>RG Search GUI — Obsidian Theme Mockup</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg:        #0c0d0e;
-    --surface:   #141618;
-    --surface-2: #1b1e21;
-    --border:    #2a2e33;
-    --text:      #d7dbdf;
-    --text-dim:  #7d858c;
-    --accent:    #ffb000;
-    --accent-dim:#9c6c00;
-    --match:     #ffd866;
-    --match-fg:  #1a1300;
-    --ok:        #5ec27e;
-    --warn:      #e0813d;
-    --danger:    #e0556b;
+    --bg:         #282c34;
+    --surface:    #21252b;
+    --surface-2:  #2c313a;
+    --border:     #3b4048;
+    --text:       #abb2bf;
+    --text-dim:   #7f848e;
+    --accent:     #61afef;
+    --accent-dim: #4a9fe0;
+    --match:      #f6d365;
+    --match-fg:   #000000;
+    --ok:         #98c379;
+    --warn:       #d19a66;
+    --danger:     #e06c75;
+    --preview-bg: #1e1f22;
+    --preview-fg: #d8dee9;
     --mono: 'IBM Plex Mono', monospace;
     --sans: 'IBM Plex Sans', system-ui, sans-serif;
   }
@@ -50,21 +52,21 @@
     position: relative;
   }
   .header-brand {
-    font-family: var(--mono);
+    font-family: var(--sans);
     font-size: 13px;
     font-weight: 600;
-    color: var(--accent);
-    letter-spacing: 0.04em;
+    color: var(--text);
+    letter-spacing: 0.02em;
     display: flex;
     align-items: center;
     gap: 8px;
   }
   .brand-diamond {
-    width: 10px; height: 10px;
+    width: 8px; height: 8px;
     background: var(--accent);
-    transform: rotate(45deg);
+    border-radius: 50%;
     flex-shrink: 0;
-    box-shadow: 0 0 8px var(--accent);
+    box-shadow: 0 0 6px var(--accent);
   }
   .header-spacer { flex: 1; }
   .engine-badge {
@@ -197,7 +199,7 @@
   }
   .field-input:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 0 2px rgba(255,176,0,0.12);
+    box-shadow: 0 0 0 2px rgba(97,175,239,0.15);
   }
   .field-input::placeholder { color: var(--text-dim); }
 
@@ -220,7 +222,7 @@
     letter-spacing: 0.02em;
   }
   .toggle-chip.on {
-    background: rgba(255,176,0,0.1);
+    background: rgba(97,175,239,0.1);
     border-color: var(--accent);
     color: var(--accent);
   }
@@ -267,13 +269,13 @@
   .btn-primary {
     background: var(--accent);
     border-color: var(--accent);
-    color: #1a1300;
+    color: #1b1e24;
     font-weight: 600;
     grid-column: span 2;
     padding: 8px;
     font-size: 13px;
   }
-  .btn-primary:hover { background: #ffc333; box-shadow: 0 0 12px rgba(255,176,0,0.3); }
+  .btn-primary:hover { background: #ffc333; box-shadow: 0 0 12px rgba(97,175,239,0.3); }
   .btn-danger { border-color: var(--danger); color: var(--danger); }
   .btn-danger:hover { background: rgba(224,85,107,0.1); }
 
@@ -357,7 +359,7 @@
   }
   .file-row:hover { background: var(--surface-2); }
   .file-row.selected {
-    background: rgba(255,176,0,0.08);
+    background: rgba(97,175,239,0.08);
     border-left: 2px solid var(--accent);
     padding-left: 12px;
   }
@@ -442,7 +444,7 @@
     flex: 1;
     overflow: auto;
     padding: 10px 0;
-    background: var(--bg);
+    background: var(--preview-bg);
   }
   .code-area::-webkit-scrollbar { width: 6px; height: 6px; }
   .code-area::-webkit-scrollbar-track { background: transparent; }
@@ -459,7 +461,7 @@
   }
   .code-line:hover { background: rgba(255,255,255,0.02); }
   .code-line.hit-line { background: rgba(255,216,102,0.04); }
-  .code-line.active-hit { background: rgba(255,176,0,0.08); }
+  .code-line.active-hit { background: rgba(97,175,239,0.08); }
   .line-num {
     width: 48px;
     text-align: right;
@@ -479,13 +481,13 @@
     flex-shrink: 0;
     opacity: 0.5;
   }
-  .code-content { color: var(--text); white-space: pre; }
-  .kw { color: #c9a3f7; }
-  .str { color: #87c672; }
-  .cmt { color: var(--text-dim); font-style: italic; }
-  .num { color: #e5a261; }
-  .type { color: #7eb8f5; }
-  .fn { color: #7eb8f5; }
+  .code-content { color: var(--preview-fg); white-space: pre; }
+  .kw  { color: #c678dd; }
+  .str { color: #98c379; }
+  .cmt { color: #7f848e; font-style: italic; }
+  .num { color: #d19a66; }
+  .type{ color: #61afef; }
+  .fn  { color: #61afef; }
 
   mark.hit {
     background: var(--match);
@@ -498,11 +500,11 @@
     color: var(--match-fg);
     border-radius: 2px;
     padding: 0 1px;
-    box-shadow: 0 0 8px rgba(255,176,0,0.5);
+    box-shadow: 0 0 8px rgba(97,175,239,0.5);
     animation: pulse-hit 0.4s ease-out;
   }
   @keyframes pulse-hit {
-    0%   { box-shadow: 0 0 0 0 rgba(255,176,0,0.7); }
+    0%   { box-shadow: 0 0 0 0 rgba(97,175,239,0.7); }
     100% { box-shadow: 0 0 12px 4px rgba(255,176,0,0); }
   }
 
@@ -540,7 +542,7 @@
 <header class="header">
   <div class="header-brand">
     <div class="brand-diamond"></div>
-    PHOSPHOR WORKBENCH
+    Workspace Search
   </div>
   <div class="header-spacer"></div>
   <div class="engine-badge">
