@@ -22,14 +22,20 @@ def _load_settings_file() -> dict[str, object]:
     if not settings_path.exists():
         return {}
     try:
-        return json.loads(settings_path.read_text(encoding="utf-8"))
+        data = json.loads(settings_path.read_text(encoding="utf-8"))
     except Exception:
         return {}
+    return data if isinstance(data, dict) else {}
 
 
-def _save_settings_file(payload: dict[str, object]) -> None:
-    settings_path = _get_settings_path()
+def _save_settings_file(payload: dict[str, object], settings_path: Path | None = None) -> str | None:
+    """寫入暫存檔後再替換，寫到一半失敗不會弄壞原設定；失敗時回傳原因讓畫面提示。"""
     try:
-        settings_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-    except Exception:
-        pass
+        settings_path = settings_path or _get_settings_path()
+        temporary = settings_path.with_name(settings_path.name + ".tmp")
+        temporary.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+        os.replace(temporary, settings_path)
+    except OSError as exc:
+        # 只顯示原因，不帶完整路徑，避免畫面露出使用者名稱。
+        return f"無法寫入設定檔：{exc.strerror or type(exc).__name__}"
+    return None

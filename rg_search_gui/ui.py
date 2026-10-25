@@ -11,7 +11,7 @@ import threading
 import time
 from collections import OrderedDict
 from pathlib import Path
-from typing import Iterable
+from typing import Callable, Iterable
 
 import tkinter as tk
 from tkinter import filedialog, font as tkfont, messagebox, ttk
@@ -25,6 +25,7 @@ from rg_search_gui.search_helpers import (
     _build_context_lines,
     _build_context_lines_from_lines,
     _clone_results,
+    _dedupe_folders,
     _display_file_name,
     _filter_file_results,
     _find_match_spans,
@@ -38,6 +39,7 @@ from rg_search_gui.search_helpers import (
 )
 from rg_search_gui.search_service import (
     _is_rg_engine as service_is_rg_engine,
+    _iter_searchable_lines,
     _search_with_grep_fallback_stream as service_search_with_grep_fallback_stream,
     _search_with_rg_stream as service_search_with_rg_stream,
 )
@@ -362,7 +364,7 @@ def apply_dark_theme(root: tk.Misc) -> None:
     root.option_add("*Listbox.selectForeground", "#1b1e24")
 
 
-def _open_path_safely(file_path: Path) -> str | None:
+def _open_path_safely(file_path: Path, confirm: Callable[[Path], bool] | None = None) -> str | None:
     suffix = file_path.suffix.lower()
     try:
         # 可執行或腳本類型只在檔案總管中定位，避免直接執行。
@@ -373,6 +375,9 @@ def _open_path_safely(file_path: Path) -> str | None:
         if suffix in TEXT_EDITOR_SUFFIXES:
             subprocess.Popen(["notepad.exe", str(file_path)])
             return "open_text"
+        # 其他類型（巨集文件、.jar、.pif…）黑名單列不完，交給關聯程式前一律先確認。
+        if confirm is None or not confirm(file_path):
+            return "cancelled"
         os.startfile(str(file_path))
         return "open"
     except Exception:
@@ -443,6 +448,9 @@ class RgSearchApp(tk.Tk):
         self._install_log_window: tk.Toplevel | None = None
         self._install_log_text: tk.Text | None = None
         self._settings_panel_visible = False
+        self._result_encoding = "Auto"
+        self._search_warnings: list[str] = []
+        self._previewed_state: tuple[str, int] | None = None
 
         self._load_settings()
         self._build_menu()
@@ -467,27 +475,39 @@ class RgSearchApp(tk.Tk):
         self._ui_task_queue.put((action, payload))
 
     def _drain_ui_task_queue(self) -> None:
-        while True:
-            try:
-                action, payload = self._ui_task_queue.get_nowait()
-            except queue.Empty:
-                break
+        try:
+            pending = []
+            while True:
+                try:
+                    pending.append(self._ui_task_queue.get_nowait())
+                except queue.Empty:
+                    break
+            # 串流快照只套用最新一份，畫面來不及更新時不累積舊快照。
+            last_stream = max((i for i, (action, _) in enumerate(pending) if action == "stream_results"), default=-1)
 
-            if action == "stream_results":
-                self._apply_stream_results(*payload)
-            elif action == "apply_results":
-                self._apply_results(*payload)
-            elif action == "show_error":
-                self._show_search_error(*payload)
-            elif action == "finish_search":
-                self._finish_search(*payload)
-            elif action == "install_done":
-                self._finish_install_rg(*payload)
-            elif action == "install_log":
-                self._append_install_log(*payload)
-
-        if self.winfo_exists():
-            self.after(50, self._drain_ui_task_queue)
+            for index, (action, payload) in enumerate(pending):
+                try:
+                    if action == "stream_results":
+                        if index == last_stream:
+                            self._apply_stream_results(*payload)
+                    elif action == "apply_results":
+                        self._apply_results(*payload)
+                    elif action == "show_error":
+                        self._show_search_error(*payload)
+                    elif action == "finish_search":
+                        self._finish_search(*payload)
+                    elif action == "search_warning":
+                        self._search_warnings.append(*payload)
+                    elif action == "install_done":
+                        self._finish_install_rg(*payload)
+                    elif action == "install_log":
+                        self._append_install_log(*payload)
+                except Exception as exc:
+                    # 單一動作失敗不能讓輪詢停掉，否則畫面會永遠停在「搜尋中」。
+                    self._show_search_error(f"畫面更新失敗：{exc}")
+        finally:
+            if self.winfo_exists():
+                self.after(50, self._drain_ui_task_queue)
 
     def _finish_install_rg(self, success: bool, message: str) -> None:
         if hasattr(self, "install_rg_button"):
@@ -646,7 +666,10 @@ class RgSearchApp(tk.Tk):
             "min_hits": self.min_hits_var.get(),
             "sort": self.sort_var.get(),
         }
-        _save_settings_file(payload)
+        error = _save_settings_file(payload)
+        if error:
+            self.status_var.set("設定儲存失敗")
+            self.summary_var.set(error)
 
     def _get_preview_theme(self) -> dict[str, str]:
         theme_name = _normalize_preview_theme_name(self.code_theme_var.get())
@@ -1254,8 +1277,11 @@ class RgSearchApp(tk.Tk):
             self.engine_var.set("引擎：未啟動")
             return
 
-        self._refresh_engine_info()
         engine = self._engine_info.executable
+        # 只有還沒偵測到或執行檔已消失才重新偵測，不必每次搜尋都在 UI 執行緒跑 rg --version。
+        if engine is None or not os.path.exists(engine):
+            self._refresh_engine_info()
+            engine = self._engine_info.executable
         if engine is None:
             self.status_var.set("找不到 rg 或 grep")
             self.summary_var.set("請先安裝 ripgrep (rg) 或 grep，或按右側『安裝 rg』")
@@ -1272,6 +1298,8 @@ class RgSearchApp(tk.Tk):
         self._clear_results()
         self._save_settings()
         self._stop_event.clear()
+        self._search_warnings = []
+        self._result_encoding = options.encoding
         self.start_button.config(state="disabled")
         self.cancel_button.config(state="normal")
         self.engine_var.set(f"引擎：{self._engine_info.label} {self._engine_info.version}".strip())
@@ -1279,7 +1307,10 @@ class RgSearchApp(tk.Tk):
         self.summary_var.set("正在串流接收結果")
         self.progress.configure(mode="indeterminate")
         self.progress.start(12)
-        self._search_thread = threading.Thread(target=self._search_worker, args=(options, engine), daemon=True)
+        # Tk 變數只能在主執行緒讀取，排序方式先取出再交給背景執行緒。
+        self._search_thread = threading.Thread(
+            target=self._search_worker, args=(options, engine, self.sort_var.get()), daemon=True
+        )
         self._search_thread.start()
 
     def cancel_search(self) -> None:
@@ -1340,7 +1371,7 @@ class RgSearchApp(tk.Tk):
         except ValueError as exc:
             raise ValueError("Max file size 必須是整數") from exc
         return SearchOptions(
-            folders=folders,
+            folders=_dedupe_folders(folders),
             include_patterns=_split_patterns(self.include_var.get()) or ["*"],
             exclude_patterns=_split_patterns(self.exclude_var.get()),
             text=text,
@@ -1351,7 +1382,7 @@ class RgSearchApp(tk.Tk):
             max_file_size_mb=max_file_size_mb,
         )
 
-    def _search_worker(self, options: SearchOptions, engine: str) -> None:
+    def _search_worker(self, options: SearchOptions, engine: str, sort_mode: str) -> None:
         try:
             if self._stop_event.is_set():
                 self._queue_ui_action("finish_search", True)
@@ -1362,22 +1393,23 @@ class RgSearchApp(tk.Tk):
                     results = service_search_with_rg_stream(
                         engine,
                         options,
-                        sort_mode=self.sort_var.get(),
+                        sort_mode=sort_mode,
                         emit_result=self._schedule_stream_results,
                         stop_event=self._stop_event,
                         process_callback=lambda process: setattr(self, "_active_process", process),
+                        warning_callback=lambda message: self._queue_ui_action("search_warning", message),
                     )
                 except OSError:
                     results = service_search_with_grep_fallback_stream(
                         options,
-                        sort_mode=self.sort_var.get(),
+                        sort_mode=sort_mode,
                         emit_result=self._schedule_stream_results,
                         stop_event=self._stop_event,
                     )
             else:
                 results = service_search_with_grep_fallback_stream(
                     options,
-                    sort_mode=self.sort_var.get(),
+                    sort_mode=sort_mode,
                     emit_result=self._schedule_stream_results,
                     stop_event=self._stop_event,
                 )
@@ -1405,6 +1437,11 @@ class RgSearchApp(tk.Tk):
             self._refresh_file_tree()
             self.status_var.set("完成，沒有命中結果")
             self.summary_var.set("沒有符合條件的結果")
+        warning_lines = [line for warning in self._search_warnings for line in warning.splitlines() if line.strip()]
+        if warning_lines:
+            # 部分路徑讀不到時仍保留結果，但要提示結果可能不完整。
+            self.status_var.set(f"{self.status_var.get()}（{len(warning_lines)} 個路徑無法讀取）")
+            self.summary_var.set(f"{self.summary_var.get()} | {warning_lines[0]}")
 
         self.progress.stop()
         self.progress.configure(mode="determinate")
@@ -1506,10 +1543,11 @@ class RgSearchApp(tk.Tk):
     def _refresh_preview(self) -> None:
         selection = self.file_tree.selection()
         if selection:
-            self._render_preview_for_key(selection[0])
+            self._render_preview_for_key(selection[0], force=True)
 
     def _clear_preview(self) -> None:
         self._current_context_lines = []
+        self._previewed_state = None
         self.preview_info_var.set("預覽：尚未選擇檔案")
         if hasattr(self, "line_preview"):
             self.line_preview.configure(state="normal")
@@ -1521,11 +1559,15 @@ class RgSearchApp(tk.Tk):
         if selection:
             self._render_preview_for_key(selection[0])
 
-    def _render_preview_for_key(self, result_key: str) -> None:
+    def _render_preview_for_key(self, result_key: str, force: bool = False) -> None:
         result = self._result_by_path.get(result_key)
         if result is None:
             self._clear_preview()
             return
+        # 串流每次更新都會重建清單；同一檔案且命中數沒變就不重讀檔、不重畫預覽。
+        if not force and self._previewed_state == (result_key, len(result.hits)):
+            return
+        self._previewed_state = (result_key, len(result.hits))
         all_context_lines = self._get_cached_context_lines(result, self._get_display_lines())
         self._current_context_lines = all_context_lines
         self.preview_info_var.set(
@@ -1574,7 +1616,8 @@ class RgSearchApp(tk.Tk):
         return _build_context_lines_from_lines(cached_lines, result.hits, display_lines)
 
     def _get_cached_file_lines(self, file_path: Path) -> list[str]:
-        key = str(file_path)
+        # 預覽要用搜尋時的編碼解碼，Big5 檔案用 utf-8 讀會變亂碼、命中也標不出來。
+        key = f"{self._result_encoding}|{file_path}"
         try:
             stats = file_path.stat()
             stamp = (stats.st_mtime_ns, stats.st_size)
@@ -1586,11 +1629,7 @@ class RgSearchApp(tk.Tk):
             self._cached_file_lines.move_to_end(key)
             return cached[2]
 
-        try:
-            with file_path.open("r", encoding="utf-8", errors="replace") as file_handle:
-                lines = file_handle.readlines()
-        except Exception:
-            lines = []
+        lines = _iter_searchable_lines(file_path, self._result_encoding)
 
         self._cached_file_lines[key] = (stamp[0], stamp[1], lines)
         self._cached_file_lines.move_to_end(key)
@@ -1633,13 +1672,23 @@ class RgSearchApp(tk.Tk):
         result = self._result_by_path.get(result_key)
         if result is None:
             return
-        outcome = _open_path_safely(result.full_path)
+        outcome = _open_path_safely(result.full_path, confirm=self._confirm_open)
         if outcome == "reveal":
             self.status_var.set("已在檔案總管定位")
             self.summary_var.set("偵測到可執行或腳本檔，已改為定位檔案以避免直接執行")
         elif outcome == "open_text":
             self.status_var.set("已開啟文字檔")
             self.summary_var.set("已使用文字編輯器開啟目前檔案")
+
+    def _confirm_open(self, file_path: Path) -> bool:
+        return messagebox.askyesno(
+            "確認開啟",
+            "將使用 Windows 關聯程式開啟此檔案。文件巨集、捷徑都可能執行程式，請只開啟可信檔案。\n\n"
+            f"{redact_path_for_display(file_path)}",
+            icon=messagebox.WARNING,
+            default=messagebox.NO,
+            parent=self,
+        )
 
     def _get_display_lines(self) -> int:
         return _parse_positive_int(self.display_lines_var.get(), default=7, minimum=1, maximum=101)
