@@ -60,6 +60,19 @@ class UiSecurityTests(unittest.TestCase):
         popen.assert_called_once_with(["notepad.exe", str(file_path)])
         startfile.assert_not_called()
 
+    @patch("rg_search_gui.ui.os.startfile")
+    @patch("rg_search_gui.ui.subprocess.Popen")
+    def test_open_path_safely_requires_confirmation_for_other_types(self, popen: Mock, startfile: Mock) -> None:
+        file_path = Path(r"C:\temp\report.xlsm")
+
+        self.assertEqual(_open_path_safely(file_path), "cancelled")
+        self.assertEqual(_open_path_safely(file_path, confirm=lambda _path: False), "cancelled")
+        startfile.assert_not_called()
+
+        self.assertEqual(_open_path_safely(file_path, confirm=lambda _path: True), "open")
+        startfile.assert_called_once_with(str(file_path))
+        popen.assert_not_called()
+
 
 if __name__ == "__main__":
     unittest.main()

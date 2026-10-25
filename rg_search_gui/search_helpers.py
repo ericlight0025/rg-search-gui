@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import fnmatch
 import keyword
+import os
 import re
 from collections.abc import Iterable
 from pathlib import Path
@@ -59,24 +60,50 @@ def _matches_filter_text(candidate: str, filter_text: str) -> bool:
     return normalized_filter in candidate.lower()
 
 
+# 與 rg 端相同：* 與 *.* 代表全部檔案，包含沒有副檔名的 Makefile、LICENSE。
+MATCH_ALL_INCLUDE_PATTERNS = {"*", "*.*"}
+
+
+def _normalize_glob(pattern: str) -> str:
+    return pattern.replace("\\", "/").strip()
+
+
 def _matches_include(relative_path: str, name: str, patterns: Iterable[str]) -> bool:
     for pattern in patterns:
-        normalized = pattern.replace("\\", "/")
-        if fnmatch.fnmatch(name, normalized) or fnmatch.fnmatch(relative_path, normalized):
+        normalized = _normalize_glob(pattern).lower()
+        if normalized in MATCH_ALL_INCLUDE_PATTERNS:
+            return True
+        if fnmatch.fnmatchcase(name.lower(), normalized) or fnmatch.fnmatchcase(relative_path.lower(), normalized):
             return True
     return False
 
 
 def _matches_exclude(relative_path: str, name: str, patterns: Iterable[str]) -> bool:
-    path_lower = relative_path.lower()
-    name_lower = name.lower()
+    wrapped_path = f"/{relative_path.lower()}/"
     for pattern in patterns:
-        normalized = pattern.replace("\\", "/").lower()
-        if fnmatch.fnmatch(relative_path, normalized) or fnmatch.fnmatch(name, normalized):
-            return True
-        if normalized in path_lower or normalized in name_lower:
+        normalized = _normalize_glob(pattern).lower()
+        if not normalized:
+            continue
+        if any(char in normalized for char in "*?[]"):
+            if fnmatch.fnmatchcase(relative_path.lower(), normalized) or fnmatch.fnmatchcase(name.lower(), normalized):
+                return True
+        # 與 rg 的 !**/name 一致：只排除同名的資料夾或檔案，不做子字串比對（排除 test 不可連 latest.py 一起排除）。
+        elif f"/{normalized.strip('/')}/" in wrapped_path:
             return True
     return False
+
+
+def _dedupe_folders(folders: list[Path]) -> list[Path]:
+    """移除重複或被其他根目錄包含的資料夾，同一個檔案只搜尋一次。"""
+    keys = [os.path.normcase(os.path.abspath(folder)).rstrip("\\/") for folder in folders]
+    kept: list[Path] = []
+    for index, (folder, key) in enumerate(zip(folders, keys)):
+        if key in keys[:index]:
+            continue
+        if any(key.startswith(other + os.sep) for other in keys if other != key):
+            continue
+        kept.append(folder)
+    return kept
 
 
 def _filter_file_results(
