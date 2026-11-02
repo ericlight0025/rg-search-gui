@@ -1,0 +1,3 @@
+# GUI（rg_search_gui，tkinter 版）只用 Python 標準函式庫，不需要額外套件。
+# 終端機版（rg-search-tui）需要 textual：
+textual>=0.80

@@ -5,14 +5,14 @@ cd /d "%~dp0"
 
 where py >nul 2>nul
 if %errorlevel%==0 (
-    py -c "import textual" >nul 2>nul || py -m pip install "textual>=0.80"
+    py -c "import textual" >nul 2>nul || py -m pip install -r requirements.txt
     py -m rg_search_gui.tui_main %*
     exit /b %errorlevel%
 )
 
 where python >nul 2>nul
 if %errorlevel%==0 (
-    python -c "import textual" >nul 2>nul || python -m pip install "textual>=0.80"
+    python -c "import textual" >nul 2>nul || python -m pip install -r requirements.txt
     python -m rg_search_gui.tui_main %*
     exit /b %errorlevel%
 )

@@ -82,7 +82,7 @@ It is tuned for large log folders (hundreds of thousands to millions of lines).
 ![TUI preview](docs/assets/tui-preview.png)
 
 ```bash
-pip install -e .[tui]
+pip install -e .[tui]        # or: pip install -r requirements.txt
 rg-search-tui D:\logs -q timeout -g "*.log"
 # or: python -m rg_search_gui.tui_main D:\logs -q timeout
 # or on Windows: run_rg_search_tui.bat D:\logs -q timeout
@@ -160,6 +160,7 @@ Without `rg` the TUI falls back to the Python search (slow on large logs). With 
 ├─ CONTRIBUTING.md
 ├─ LICENSE
 ├─ pyproject.toml
+├─ requirements.txt
 ├─ run_rg_search_gui.bat
 └─ run_rg_search_tui.bat
 ```

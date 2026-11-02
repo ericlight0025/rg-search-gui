@@ -43,7 +43,7 @@ python -m rg_search_gui
 ![TUI 畫面](../assets/tui-preview.png)
 
 ```bash
-pip install -e .[tui]
+pip install -e .[tui]        # 或：pip install -r requirements.txt
 rg-search-tui D:\logs -q timeout -g "*.log"
 ```
 
