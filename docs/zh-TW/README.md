@@ -36,6 +36,35 @@ python -m rg_search_gui
 直接執行 `run_rg_search_gui.bat`
 這個啟動器不會綁死本機 `C:\...` Python 路徑，會先嘗試 `py`，再嘗試 `PATH` 內的 `python`
 
+### 方式 4：終端機版（TUI）
+
+不想開視窗、或要在遠端主機上查 log，可以用終端機版。搜尋核心跟 GUI 共用，版面是左邊搜尋條件、右上檔案清單、右下命中預覽，全程鍵盤操作，適合幾十萬到幾百萬行的 log。
+
+![TUI 畫面](../assets/tui-preview.png)
+
+```bash
+pip install -e .[tui]
+rg-search-tui D:\logs -q timeout -g "*.log"
+```
+
+Windows 也可以直接執行 `run_rg_search_tui.bat D:\logs -q timeout`（第一次會自動安裝 `textual`）。
+
+| 按鍵 | 功能 |
+|---|---|
+| `Enter`（搜尋框） | 開始搜尋；`↑` / `↓` 叫回最近 20 次搜尋 |
+| `n` / `N` | 下一筆 / 上一筆命中（會跨檔案） |
+| `]` / `[` | 下一個 / 上一個檔案 |
+| `1` / `2` / `0` | 只看 ERROR / ERROR+WARN / 全部 |
+| `f` | 在結果裡再篩：空白分隔多個字，`-字` 表示排除 |
+| `+` / `-` | 前後文 0、2、5、10、20 行 |
+| `Enter`（檔案清單） | 完整檢視：以命中行為中心看原檔，Esc 返回 |
+| `s` | 檔案排序：命中數、檔名、修改時間 |
+| `o` / `y` / `e` | 用 VS Code 開到那一行 / 複製命中與前後文 / 匯出篩選後結果成 `.log` |
+| `Esc` | 停止搜尋 |
+| `Ctrl+B` / `?` | 收起側欄 / 顯示所有快捷鍵 |
+
+沒有 `rg` 時會改用 Python 搜尋（大量 log 會很慢）。編碼預設 `Auto`，預覽會自動判斷 Big5（cp950），中文關鍵字也會再用 Big5 搜一次。
+
 ## 需求
 
 - Python 3.10 以上
