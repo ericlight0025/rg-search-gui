@@ -74,6 +74,36 @@ python -m rg_search_gui
 Run `run_rg_search_gui.bat`.
 The launcher tries `py` first, then `python` from `PATH`.
 
+## Terminal UI (TUI)
+
+Prefer staying in the terminal? `rg-search-tui` uses the same search engine with a keyboard-driven layout built on [Textual](https://textual.textualize.io/): search options on the left, matched files top-right, hit preview bottom-right.
+It is tuned for large log folders (hundreds of thousands to millions of lines).
+
+![TUI preview](docs/assets/tui-preview.png)
+
+```bash
+pip install -e .[tui]
+rg-search-tui D:\logs -q timeout -g "*.log"
+# or: python -m rg_search_gui.tui_main D:\logs -q timeout
+# or on Windows: run_rg_search_tui.bat D:\logs -q timeout
+```
+
+| Key | Action |
+|---|---|
+| `Enter` (search box) | Search · `↑` / `↓` recalls the last 20 searches |
+| `n` / `N` | Next / previous hit, continuing across files |
+| `]` / `[` | Next / previous file |
+| `1` / `2` / `0` | Only ERROR / ERROR+WARN / all levels |
+| `f` | Refine within results: space-separated words, `-word` excludes |
+| `+` / `-` | Context lines: 0, 2, 5, 10, 20 |
+| `Enter` (file list) | Full view: the source file centered on the hit (Esc to return) |
+| `s` | Sort files by hits, name, or modified time |
+| `o` / `y` / `e` | Open in VS Code at the line / copy hit with context / export filtered hits to `.log` |
+| `Esc` | Stop the search |
+| `Ctrl+B` / `?` | Toggle sidebar / show all keys |
+
+Without `rg` the TUI falls back to the Python search (slow on large logs). With `-e Auto` (default), Big5 / cp950 files are detected for preview, and Chinese queries are also searched as Big5.
+
 ## Good Fit
 
 - Search across project folders without opening a terminal every time
@@ -108,12 +138,15 @@ The launcher tries `py` first, then `python` from `PATH`.
 │  ├─ search_helpers.py
 │  ├─ search_service.py
 │  ├─ settings_service.py
+│  ├─ tui.py
+│  ├─ tui_main.py
 │  └─ ui.py
 ├─ docs/
 │  ├─ assets/
 │  │  ├─ search-result.png
 │  │  ├─ search-settings-dialog.png
-│  │  └─ settings-menu.png
+│  │  ├─ settings-menu.png
+│  │  └─ tui-preview.png
 │  ├─ maintainers/
 │  │  ├─ github-topics.md
 │  │  └─ release-template.md
@@ -127,7 +160,8 @@ The launcher tries `py` first, then `python` from `PATH`.
 ├─ CONTRIBUTING.md
 ├─ LICENSE
 ├─ pyproject.toml
-└─ run_rg_search_gui.bat
+├─ run_rg_search_gui.bat
+└─ run_rg_search_tui.bat
 ```
 
 ## Module Guide
@@ -135,6 +169,9 @@ The launcher tries `py` first, then `python` from `PATH`.
 - `run_rg_search_gui.bat`: Windows launcher that starts the app with `py` or `python` from `PATH`
 - `rg_search_gui/__main__.py`: module entry point for `python -m rg_search_gui`
 - `rg_search_gui/main.py`: lightweight app launcher that calls the Tkinter UI entry
+- `run_rg_search_tui.bat`: Windows launcher for the terminal UI (installs `textual` on first run if missing)
+- `rg_search_gui/tui_main.py`: command-line entry for `rg-search-tui` (folders, `-q`, `-g`, `-x`, `-e`)
+- `rg_search_gui/tui.py`: Textual terminal UI reusing `search_service.py`
 - `rg_search_gui/ui.py`: Tkinter UI, search workflow coordination, preview rendering, and user actions
 - `rg_search_gui/models.py`: shared data models for search options, hits, results, context lines, and engine info
 - `rg_search_gui/search_service.py`: search execution with `rg`, `grep`, and Python fallback helpers
